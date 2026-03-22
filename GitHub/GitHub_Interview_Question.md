@@ -1,4 +1,4 @@
-# Git Basics Interview Questions For Freshers
+# Git Basics Interview Questions For GFG
 ## 1. What Is Git?
 1. Defination
 Git ek Version Control System (VCS) hai jo code ke changes ko track karta hai.
