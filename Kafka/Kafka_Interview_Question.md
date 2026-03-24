@@ -790,21 +790,397 @@ Customer ko delay nahi hota 😎
 
 
 ## Q21 : What is the purpose of the Kafka Streams API?
+1. Defination
+Kafka Streams API ek Java library hai jo developers ko Kafka topics ke data ko
+    👉 process,
+    👉 transform,
+    👉 aggregate,
+    👉 analyze in real-time
+Karne ki ability deta hai.
+👉 Simple bolu: Kafka Streams API = Kafka data ko real-time me process karne ka tool
+
+2. Example 
+-- Maan lo restaurant me har order Kafka me aa raha hai:
+-- Topic: Orders
+-- Example orders:
+| OrderID | Item   | Price |
+| ------- | ------ | ----- |
+| 1       | Pizza  | 300   |
+| 2       | Burger | 200   |
+| 3       | Pizza  | 300   |
+| 4       | Pasta  | 250   |
+👉 Ab restaurant owner ko real-time insights chahiye:
+    - Pizza kitni baar order hua
+    - Total sales kitni hui
+    - Veg vs Non-Veg orders
+    - Last 10 min orders
+👉 Ye sab Kafka Streams API process karega.
+Example : Orders Topic → Kafka Streams Processing → Analytics Topic
+
+3. Visualization
+        Orders Topic
+             ↓
+     Kafka Streams App
+   (Filter / Map / Aggregate)
+             ↓
+      Processed Data Topic
+             ↓
+      Dashboard / Analytics
+👉 Data continuously flow karta hai (stream processing)
+
 
 ## Q22 : How does Kafka handle message size limits?
+1. Defination
+-- Kafka me har message ka maximum size limit hota hai.
+-- Agar message is limit se bada ho jaye to Kafka usko reject kar deta hai.
+👉 Simple bolu: Kafka ek limit set karta hai ki ek message kitna bada ho sakta hai.
+Default KAfka me : Default max message size ≈ 1 MB
+
+2. Important Configurations
+-- Producer : max.request.size
+    👉 Producer kitna bada message bhej sakta hai.
+    Example : max.request.size = 5MB
+-- Broker Side : message.max.bytes
+    👉 Broker kitna bada message accept karega
+-- Topic Level : max.message.bytes
+    👉 Specific topic ke liye message limit.
+-- Consumer Side : fetch.max.bytes
+    👉 Consumer kitna bada message read karega.
+
+3. Important Points
+-- Default Limit - 1mb
+-- Large Messgage Not Recommended
+    - Network slow karte hain
+    - Broker memory pressure badhate hain
 
 ## Q23 : What is the role of the group coordinator in Kafka?
+1. Defination
+-- Kafka me Group Coordinator ek broker hota hai jo:
+    - consumer group ko manage karta hai
+    - partitions assign karta hai consumers ko
+    - consumer heartbeats monitor karta hai
+    - rebalancing trigger karta hai
+👉 Simple bolu:
+Group Coordinator = Consumer group ka manager jo decide karta hai kaun consumer kaunsa kaam karega.
 
+2. Example 
+-- Maan lo restaurant me orders kitchen me aa rahe hain.
+-- Topic = Food Orders
+-- Partitions : P0 ,P1 ,P2 ,P3
+-- Kitchen me 4 chefs (consumers) ka group hai : Chef1, Chef2 , Chef3 , Chef4
+-- Ab kaun decide karega kaunsa chef kaunsa order banayega
+ 👉 Kitchen Manager (Group Coordinator)
+
+3. Visualization
+           Orders Topic
+       -------------------
+       P0   P1   P2   P3
+       -------------------
+            ↓
+      Group Coordinator
+      (Kitchen Manager)
+     ↓      ↓      ↓      ↓
+   Chef1  Chef2  Chef3  Chef4
+   (C1)   (C2)   (C3)   (C4)
+
+4. Responsibilities
+-- Consumer Group Management
+    - Group Coordinator track karta hai:    
+        - Kaun consumer group me join hua
+        - Kaun leave hua
+        - Kaun Active hai.
+    Resturant Analogy : Manager check karta hai kaun chef duty par hai.
+-- Partition Assignment 
+    - Coordinator decide karta hai: Kaunsa consumer → kaunsi partition read karega
+    - Example : C1 -> P0 , C2 -> P1 , C3 -> P2
+-- Rebalancing Trigger
+    - Agar : 
+        - New consumer join kare
+        - Consumer crash ho jaye
+    - To coordinator rebalance start karega.
+-- Heartbeat Monitoring
+    - Consumers periodically heartbeat bhejte hain.
+    - Agar heartbeat na aaye: "Consumer dead assume kiya jata hai"
+-- Offset Tracking
+    - Coordinator ensure karta hai: "Consumers ka offset properly commit ho raha hai"
+
+    
 ## Q24 : How does Kafka handle data replication?
+1. Defination
+-- Kafka data replication use karta hai taaki :
+    - data loss na ho.
+    - system highly available rahe
+    - broker failure se system survive kar sake,
+👉 Simple bolu : Replication = Kafka ek message ki multiple copies different brokers par store karta hai.
+
+2. Example 
+-- Maan lo restaurant me ek important order aaya:
+    Order #101
+    Pizza + Coke
+-- Restaurant manager kya karta hai?
+    👉 Order sirf ek kitchen me nahi bhejta.
+    Instead :
+        - Kitchen1 → Main Chef
+        - Kitchen2 → Backup Chef
+        - Kitchen3 → Backup Chef
+-- Same Order ki multiple copies
+
+4. Important
+-- Replication Factor
+    - Define Karta hai : kitni copies store hongi
+    - Example : Replication Factor = 3
+    - Matlab :  1 Leader , 2 Followers
+-- Leader Replica
+    - Leader responsible hota hai:
+        - Producers se writes receive karna
+        - Consumers ko data serve karna
+-- Follower Replicas
+    - Followers continuously leader se data copy karte hain.
+    - Resturant Example : Backup chefs same recipe copy kar rahe hain
+-- ISR (In-Sync Replicas)
+    - ISR = replicas jo leader ke saath fully synced hain.
+    - Example : Leader
+                Follower1
+                Follower2
+    - Agar koi follower slow ho jaye: ISR se remove ho jata hai
+-- Leader Election
+    - Agar leader crash ho jaye : Kafka automatically new leader choose karega
+    - Example : Follower1 → New Leader
 
 ## Q25 : What is the purpose of the Idempotent Producer in Kafka?
+1. Defination
+-- Idempotent Producer ka purpose hai : 
+👉 duplicate messages ko prevent karna jab producer retries karta hai.
+Kafka ensure karta hai ki:
+    Even if producer retries → message topic me sirf ek hi baar store hoga
+-- Even if producer retries → message topic me sirf ek hi baar store hoga
+
+2. How Kafka Achieves Idempotency
+-- Kafka internally use karta hai:
+    - Producer ID(PID) : 
+        - Har producer ko Kafka ek unique producer ID deta hai. Example : Producer ID : 78945
+    - Sequence Numbers : 
+        - Har message ko ek sequence number assign hota hai. Example : Msg1 -> Seq1 , Msg2 -> Seq2 , Msg3 -> Seq3
+        - Agar Duplicate Message aaya : Seq 2 again
+        - Kafka detect Karega : Duplicate -> Reject
+    - Broker Validation : 
+        - Broker check karta hai: PID + Sequence Number
+        - Agar Duplicate mila : Message Discard
+
+3. Important Configuration
+-- Idempotent producer enable karne ke liya : enable.idempotence=true
+-- Kafka automatically configure karta hai :    
+    acks=all
+    retries > 0
+    max.in.flight.requests.per.connection <= 5
+
+4. Why Idempotent Producer Important ?
+-- Without idempotence:
+    - duplicate events
+    - incorrect analytics
+    - duplicate payments
+    - wrong order processing
+
 
 ## Q26 : How does Kafka handle consumer offsets?
+1. Defination
+-- Kafka me Consumer Offser Ek number hota hai jo batata hai :
+👉 consumer ne partition me kaunsa last message read/process kiya hai
+-- Matlab: Offset = consumer ka progress tracker
+-- Offset = position of a message in a partition
+-- Isse Kafka ko pata hota hai : 
+    - Next kaunsa message dena hai
+    - Crash ke baad processing kaha se resume hogi.
+
+2. Where Kafka Stores Offsets (Important 🔥)
+-- Kafka offsets store karta hai special topic me: "__consumer_offsets"
+-- ye topic store karta hai : 
+    - consumer group id.
+    - partition
+    - last commited offset.
+-- Example record :
+    Group : Kitchen-chefs
+    Partitions : 0
+    Offset : 2
+
+3. Offset Commit Types
+-- Auto Commit : 
+    - Kafka automatically offset save karta hai.
+    - Config : enable.auto.commit = true
+    - Example : Chef har 5 seconds me manager ko batata hai : 
+         ""Main order #2 tak complete kar chuka hoon""
+-- Manual Commit (Best Practice)
+    - Application khud decide karta hai kab offset commit karna hai.
+    - Example : Order cook hua → then offset commit
+
+4. Why Offsets Are Importnat
+-- Offsets Ensure :
+    - Crash recovery
+    - No Data Loss
+    - Controlled Processing
 
 ## Q27 : What is the difference between a round-robin partitioner and a key-based partitioner in Kafka?
+1. Defination
+-- Kafka producer decide karta hai ki message kis partition me jayega.
+Iske liye Kafka different partitioning strategies use karta hai.
+-- Do Common strategies :
+    - Round-Robin Partitioner : messages evenly distribute karta hai
+    - Key-Based Partitioner : same key wale messages same partition me bhejta hai
+
+2. Example :
+-- Maan lo Resturant me 3 chefs(partitions) hain
+    Chefs1 -> Partition 0
+    Chefs2 -> Partition 1
+    Chefs3 -> Partition 2
+-- Order aa rahe hain.
+-- Round Robin Partitioner :
+    -- Round-robin me order sequentially distribute hota hai.
+    -- Example :
+        - Orders :
+            Order1 → Pizza
+            Order2 → Burger
+            Order3 → Pasta
+            Order4 → Noodles
+            Order5 → Soup
+        - Distribution :
+            Order1 → Chef1
+            Order2 → Chef2
+            Order3 → Chef3
+            Order4 → Chef1
+            Order5 → Chef2
+        - Visulization : 
+            Orders → P0 → P1 → P2 → P0 → P1
+-- Key Based Partitioner
+    -- Key-based partitioner me message key decide karta hai partition.
+    -- Example : Key = Table ID
+    -- Key = Table ID
+        - Orders : 
+            Table1 → Pizza
+            Table2 → Burger
+            Table1 → Pasta
+            Table3 → Soup
+            Table2 → Noodles
+        - Distribution : 
+            Table1 → Chef1
+            Table1 → Chef1
+            Table2 → Chef2
+            Table2 → Chef2
+            Table3 → Chef3
+        - Visulization
+            Key(Table1) → Hash → Partition0
+            Key(Table2) → Hash → Partition1
+            Key(Table3) → Hash → Partition2
+
 
 ## Q28 : How does Kafka handle message deletion?
+1. Defination
+-- Kafka messages ko immediately delete nahi karta jab consumer unko read kar leta hai.
+-- Instead Kafka retention policies use karta hai jisse decide hota hai:
+-- 👉 messages kab delete honge
+-- Deletion mainly 2 tarike se hoti hai
+    - Time Based retention
+    - Size based retention
+    - Log compaction (special case)
+-- Simple Bolu : Kafka messages tab delete karta hai jab retention rules trigger hote hain.
+
+2. Time-Based Retention : 
+-- Config : log.retention.hours
+-- Exmaple : log.retention.hours = 168
+-- Matlb : 7 days old messages → delete
+
+3. Size-Based Retention
+-- Config : log.retention.bytes
+-- Example : Topic max size = 10GB
+-- Agar size exceed ho gaya: Old segments -> delete
+
+4. Log Compaction (Special Case)
+-- Log compaction me Kafka sirf latest value per key retain karta hai.
+-- Example :        
+    Order#101 → Pizza
+    Order#101 → Pizza + Coke
+    Order#101 → Pizza + Coke + Dessert
+-- Compaction ke baad : 
+    Order#101 → Pizza + Coke + Dessert
 
 ## Q29 : What is the purpose of the Kafka Mirror Maker?
+1. Defination
+-- Kafka MirrorMaker ek tool hai jo use hota hai:
+-- 👉 Kafka clusters ke beech data replicate karne ke liye
+-- MAtlb : Cluster A → data copy → Cluster B
+-- Simple Bola : "MirrorMaker = ek Kafka cluster ka data doosre Kafka cluster me copy karta hai."
+
+2. Example : 
+-- Maan lo ek restaurant chain hai jiske 2 branches hain:
+    - Resturant Delhi
+    - Resturant Mumbai
+-- Delhi branch me orders aa rahe hain
+    - Order1 -> Pizza
+    - Order2 -> Burger
+    - Order3 -> Pasta
+-- Owner chahta hai ki Mumbai branch ko bhi same order mila analytics ke liya.
+-- Solution : MirrorMaker
+-- Flow : Delhi Orders -> MirrorMaker -> Mumbai Kafka
+-- Ab Mumbai system bhi same data read kar sakta hai.
+
+3. Visualization
+Kafka Cluster A (Delhi)
+        ↓
+      Topic: Orders
+        ↓
+      MirrorMaker
+        ↓
+Kafka Cluster B (Mumbai)
+        ↓
+      Topic: Orders
+
+4. Why MirrorMaker Important
+-- MirrorMaker mainly use hota hai:
+    - Disaster Recovery : 
+        - Agar primary Kafka cluster crash ho jaye:
+        - Backup Cluster ready hota hai.
+    - Multi-Region Architecture
+        - US , EU , Asia Kafka Cluster
+        - Mirror Maker Ensure karta hai:
+        - data sab clusters me avilable ho
+    - Data Migration
+        - Kabhi kabhi companies:
+        - Old Kafka cluster → New Kafka cluster
+        - Migration karta hai.
+        - MirriMaker Help karta hai live data copy karne me.
+    - Load Distribution
+        - Production Cluster  , Analytics Cluster
+        - MirrorMaker data Copy karta hai taaki analytics system production ko overload na kare.
+    
+5. How MirrorMaker Works
+-- MirrorMaker Internally Use Karta hai :   
+    "Kafka Consumer + Kafka Proucer"
+-- Process :
+    - Source cluster se data read
+    - Target cluster me produce
+-- Flow : Source Kafka -> Consumer -> MirrorMaker -> PRoducer -> Traget Kafka
+
 
 ## Q30 : How does Kafka handle message versioning?
+1. Defination
+-- Kafka directly message versioning manage nahi karta.
+-- Instead Developer Use karte hain :
+    - Schema evolution
+    - Schema Registry (Avro / Protobuf / JSON Schema)
+    - Backward / Forward Compatibility.
+-- Simple Bolu : 
+-- Message versioning = jab message structure change ho jaye, system phir bhi old aur new messages ko process kar sake.
+
+2. Example :
+-- Maan lo restaurant system me order message ka format hai:
+-- Version 1
+    OrderID
+    Item
+    Price
+-- Restaurant system upgrade hua.
+-- Version 2
+    OrderID
+    Item
+    Price
+    TableNumber
+-- Problem : Old systems sirf Version 1 samajhte hain.
+-- Slution : Kafka ecosystem me Schema Registry + Compatibility Rules use kiye jaate hain.
