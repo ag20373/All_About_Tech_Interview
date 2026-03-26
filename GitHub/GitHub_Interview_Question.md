@@ -612,4 +612,117 @@ Cherry-pick = “Sirf ek particular change ko copy karke dusri branch me lana”
 ## 50 : How do you fetch all remote branches?
 -> git fetch -all
 
-# Git Situtional Based Questions 
+# Git Hub Question From ChatGpt
+## Git Fundamentals (Must Know – 100% Asked)
+What is Git?
+What is GitHub and how is it different from Git?
+What is a repository in GitHub?
+What is the difference between local repository and remote repository?
+What is a commit?
+What is the difference between git add and git commit?
+What is the difference between git fetch and git pull?
+What is the purpose of git clone?
+What is the purpose of git status?
+What is the purpose of git log?
+
+## Branching Concepts
+What is a branch in Git?
+Why do we use branches?
+What is the difference between main/master branch and feature branches?
+What is git checkout vs git switch?
+What is git branch command used for?
+What is the difference between branching and forking?
+What is git branch -d vs -D?
+
+## Merging & Rebasing
+What is git merge?
+What is git rebase?
+Difference between merge vs rebase?
+What is a merge conflict?
+How do you resolve merge conflicts?
+What is fast-forward merge?
+What is squash merge?
+
+## Commits & History Management
+What is the difference between:
+git reset
+git revert
+What is git amend?
+What is git cherry-pick?
+What is git reflog?
+What is git stash?
+When should you use git stash?
+
+##  Collaboration Using GitHub
+What is a Pull Request (PR)?
+What is the purpose of code reviews in PR?
+What is a fork in GitHub?
+What is the difference between fork and clone?
+How do you contribute to an open-source project using GitHub?
+What are GitHub Issues?
+What are GitHub Discussions?
+
+## Access Control & Permissions
+What are GitHub collaborators?
+What are GitHub teams and organizations?
+What is branch protection rule?
+What is required status check in GitHub?
+
+## GitHub Workflow & CI/CD
+What is GitHub Flow?
+What is Git Flow?
+What are GitHub Actions?
+What is CI/CD pipeline in GitHub?
+How do GitHub Actions automate builds and tests?
+What is a workflow file in GitHub Actions?
+
+## Advanced Git Concepts
+What is a detached HEAD state?
+What is submodule in Git?
+What is monorepo vs multirepo?
+What is git bisect?
+What is git tag?
+Difference between lightweight tag vs annotated tag?
+
+## Large Scale Repository Management
+What is Git LFS (Large File Storage)?
+Why is Git not ideal for large binary files?
+How does GitHub handle large repositories?
+🔍 10. Debugging & Troubleshooting
+How do you undo a commit?
+How do you remove a file from Git history?
+What happens if you accidentally push sensitive data?
+How do you fix a broken commit history?
+🏭 11. Real Production Questions (Very Common)
+How do you manage multiple developers working on the same project?
+How do you enforce code review policies?
+How do you manage release versions using GitHub?
+How do you maintain clean commit history?
+What branching strategy do you use in production?
+🧩 12. System Design / Architecture Questions
+Design a Git workflow for a large engineering team
+How would you handle 100 developers working on the same repository?
+How would you manage hotfixes in production?
+How would you design a CI/CD pipeline using GitHub Actions?
+How do companies manage microservices repositories using GitHub?
+🎯 13. GitHub Best Practices
+Use small atomic commits
+Use descriptive commit messages
+Protect main branch
+Use pull request reviews
+Automate tests with GitHub Actions
+
+10 GitHub Concepts Every Engineer Must Know
+
+If you deeply understand these 10, most interviews clear ho jaate hain:
+
+Git vs GitHub
+Branching strategy
+Pull requests
+Merge vs Rebase
+Fork workflow
+Git stash
+Git reset vs revert
+GitHub Actions
+Conflict resolution
+Branch protection
