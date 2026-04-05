@@ -1,659 +1,742 @@
-# Git Basics Interview Questions For GFG
-## 1. What Is Git?
-1. Defination
-Git ek Version Control System (VCS) hai jo code ke changes ko track karta hai.
-👉 Simple words me:
-Git = Code ka history manager + backup system + collaboration tool
-    - Har change ka record rakhta hai
-    - Multiple developers ko saath kaam karne deta hai
-    - Old version pe wapas ja sakte ho anytime
+# 1. Git Fundamentals (Must Know – 100% Asked)
+## What is Git?
+1. Analogy 
+-- Socho tum MS Word me ek document likh rahe ho.
+    - Day 1 : Document Version 1
+    - Day 2 : Kuch changes kiye → Version 2
+    - Day 3 : Aur changes → Version 3
+-- Ab agar galti ho jaye, tum chahoge ki purane version pe wapas ja sako.
+-- Aur agar team me 5 log same document pe kaam kar rahe ho, to har kisi ka change track hona chahiye.
+-- Git exactly yehi karta hai   
+    - Ye project ke har change ka history maintain karta hai aur multiple developers ko ek saath kaam karne deta hai.
 
-2. Trading Firm Example
--- Soch ek Trading Firm hai jahan ek trading system develop ho raha hai:
-    - Tumhari team ne ek Order Matching Engine banaya
-    - Fir kisi ne usme change kiya (latency improve karne ke liye)
-    - Fir kisi aur ne risk calculation add ki
-    👉 Ab problem:
-    - Kaunse version me bug aaya?
-    - Kaunse version stable tha?
-    - Kisne kya change kiya?
-    💡 Yahin Git ka kaam aata hai:
--- Git = Trading System ka Audit Trail + Version History
--- Jaise trading me har order ka log hota hai:
-    - Kis time pe order aaya
-    - Kisne place kiya
-    - Kya price tha
-    👉 Waise hi Git me:
-    - Kisne Code Change Kiya
-    - Kab Kiya
-    - kya Change Kiya
+2. Technical Explanation
+-- Git ek Distributed Version Control System (DVCS) hai.
+-- Iska use source code ke changes ko track karne aur manage karne ke liye hota hai.
+-- Git ki help se developers:
+    - Code ka history track kar sakte hain
+    - Previous version pe revert kar sakte hain
+    - Multiple developers ek project pe collaborate kar sakte hain
+    - Different features ke liye branches bana sakte hain
 
-3. Some Feature
--- Internet ke bina bhi kaam kar sakta hai
--- Har developer ke paas full code + history hoti hai
--- Naye features try karo bina main code ko todhe
--- Agar trading system crash ho gaya, turant old stable version pe ja sakte ho
--- Multiple traders (developers) ek hi system pe kaam kar sakte hain
-
-## 2. What is a repository in Git?
-1. Defination
--- Repository (repo) ek project ka storage place hota hai jahan:
-    - Saara code store hota hai
-    - Saari history (commits) save hoti hai
-    - Changes track hote hain
-👉 Simple:
-Repository = Project ka full folder + uski history
-
-2. Trading Firm Example
--- Soch ek Trading Firm ka Core System hai -- jaise :
-👉 "Equity Trading Platform"
--- Isme Kya kya hoga :
-    - Order Placement module
-    - Risk Management
-    - Market data handler
-    - Logs and configs
-💡 Ye poora system ek Repository hai
-🔍 Real Scenario:
--- Tumhari firm me ek repo hai:
-👉 trading-system-repo
--- Is repo me:
-Har file = system ka ek part
-Har change = ek update (jaise new risk rule)
-Har version = system ka ek snapshot
-
-3. Mapping
--> Repo : Trading System (poora setup)
--> Files : Modules (Order , Risk , Pricing)
--> Commits : System updates / releases
-
-## 3. What is the difference Between Git and GitHub?
--> Git :
--- Git ek tool (software) hai
--- Code ko track , manage aur version control karta hai
-    👉 Runs on your local machine
-
--> GitHub : 
--- GitHub ek platform (website/service) hai
--- Jahan tum apna Git repo store & share karte ho
-    👉 Works on internet (cloud)
-
-## 4. What is Origin in Git?
-1. Defination
-👉 Origin ek default naam (alias) hota hai jo Git me use hota hai remote repository ke liye.
-    - Jab tum GitHub (ya kisi server) se repo connect karte ho
-    - Git automatically uska naam rakh deta hai: origin
-👉 Simple:
-Origin = Tumhara main remote repo ka shortcut naam
-
-2. Trading Firm Example
--- Soch ek Trading Firm hai:
--- Tum apne system pe kaam kar rahe ho (local system),
--- aur ek central trading server hai jahan sabka code store hota hai.
--- Scenario
-    - Tum apne laptop pe trading logic update karte ho
-    - Fir tum usko central server pe bhejte ho
-    👉 Ye central server = origin
-
-3. Important
--- Origin sirf ek naam hai (default) , It Can be Changed
--- Remote Repo ka reference hai
-
-## 5. What is the Purpose of the .gitihnores files ?
-1. Defination
-👉 .gitignore ek file hoti hai jisme hum define karte hain:
-Kaun kaun si files/folders Git ko track nahi karni chahiye
-
-2. Trading Example
--- Soch ek Trading Firm ka system hai:
--- System me 3 types ki cheezein hain:
-    1. ✅ Important:
-        - Trading logic code
-        - Risk rules
-        - Order engine
-    2. ❌ Unnecessary:
-        - Temporary logs
-        - Cache files
-        - Local configs
-    3. Sensitive
-        - API Keys
-        - DB Passwords
--- Scenario
-    - Tumhari team ne galti se:
-        - logs/ folder
-        - temp files
-        - config with password
-    - Git me Dal Diya
-    - Is sa problem ya hogi 
-        - Repo Heavy 
-        - Security Risk
-        - Team me unnecessary files share ho rahi hain
--- Solution = .gitignore  
-
-3. Important
--- Sensitive Data Protect karta hai
--- Repo Clean rakhta hai
--- Performance Improve
-
-4. 👉 Agar file already commit ho chuki hai
--- .gitignore usko ignore nahi karega
--- useka liya : "git rm --cached file_name"
-
-
-## 6. What is a version control system (VCS)?
-1. Defination
-👉 Version Control System (VCS) ek system hai jo:
-    - Code ke har change ko track karta hai
-    - Different versions maintain karta hai
-    - Old version pe wapas jaane deta hai
-👉 Simple:
-VCS = Code ka “time machine + history tracker”
-
-2. Trading Firm Example 🏦
--- Soch ek Trading Firm hai jahan ek Trading Algorithm chal raha hai:
--- Real Scenario
-    - Day 1: Algo v1 → Basic buy/sell logic
-    - Day 5: Risk management add kiya
-    - Day 10:  Algo v3 → Speed optimize ki
--- Problem aaya:
-    - v3 me bug aa gaya → losses ho rahe hain
-    - Ab kya kare?
--- Without VCS
-    - Pata nahi kaunsa version stable tha
-    - Code manually rollback karna padega (risk)
--- With VCS
-    - Tum easily bol sakte ho:
-    - Mujhe v2 pe wapas jana hai
-    -  Tum dekh sakte ho:
-        - Kisne change kiya
-        - Kab kiya
-        - Kyu kiya
-    
 3. Important Points
--- Collaboration Easy : Multiple developers ek hi system pe kaam kar sakte hain
--- Backup + Safety : Code kabhi lost nahi hota
--- Branching Support : Naye features safely test kar sakte ho
--- Audit Trail : Har change ka record (like trade logs)
-
-## 7. What is the git push command?
-1. Defination
-👉 git push ka use hota hai:
-Apne local changes (commits) ko remote repository (GitHub / origin) pe bhejne ke liye
-👉 Simple:
-git push = “Mera code server pe upload kar do”
-
-2. Command : "git push origin main"
-
-3. Real Flow...
--- git add . 
--- git commit -m "Commit This Message"
--- git push origin main
-
-## 8. What is the git pull and fetch command?
-1. Defination
-👉 git pull ka use hota hai:
-Remote repository (GitHub / origin) se latest changes apne local system me lane ke liye
-
-2. Command : "git pull origin main"
-
-3. Safe Work Flow..
--- "git fetch"
--- "git pull origin main"
--- Code Changes
--- "git add ."
--- "git commit -m "update""
--- "git push origin main"
-
-## 9. What does git Clone do?
-1. Defination
--- Remote repository (GitHub/origin) ki poori copy apne local system me lane ke liye
--- Isme sirf code hi nahi, balki:
-    - Complete history
-    - Branches
-    - Commits
--- Sab kush aa jata hai. 
-
-2. Command : "git clone https://github.com/company/trading-system.git"
-
-
-## 10. What are the advantages of using GIT?
--- Multiple Dev can work on same project together.
--- Each developer has a local copy of the repository, improving performance and enabling offline work.
--- Free and widely supported.
--- Git supports work on various types of projects.
--- Each repository has only one Git directory.
-
-
-## 11. What is the difference between git init and git clone?
--> "git init" : develops a new , empty Git repository in the present directory.
--> "git clone <url>" : Clone a remote repo locally , With history , code , all files.
-
-## 12. What is git add ?
--> "git add ." : Add all the changes , Files to Stage (include)
--> "git add FileName" : Add Specified File to Stage (Include)
-
-## 13. What is git status ?
-1. Defination
-👉 git status ek command hai jo batata hai:
-    Abhi tumhare repo ki current condition kya hai
-    - Kaunse files modified hain
-    - Kaunse staged hain
-    - Kaunse untracked hain
-👉 Simple:
-git status = “Mere code ki current situation batao”
-
-2. Command : "git status"
-
-3. Output kya batata hai:
-🔴 Modified files → jo change hue hain
-🟢 Staged files → jo commit ke liye ready hain
-⚪ Untracked files → nayi files (Git track nahi kar raha)
-
-## 14. What is a commit in Git ?
-1. Defination
-👉 Commit ek snapshot (photo) hota hai tumhare code ka at a specific point in time.
-    - Jo changes tumne kiye → unko permanently save karta hai
-    - Har commit ka ek unique ID hota hai
-👉 Simple:
-Commit = “Code ka saved version + message”
-
-2. Command : "git commit -m "Added Risk Code""
-
-
-## 15. What is the purpose of the git clean command ?
-1. Defination
-👉 git clean ka use hota hai:
-    Untracked files (jo Git track nahi kar raha) ko delete karne ke liye
-👉 Simple:
-    git clean = “Repo me pade unwanted / extra files ko hata do”
-
-2. Command : "git clean -f"
--- “Saare untracked files delete kar do”
--- Dangerous
-
-3. Command : "git clean -n"
--- Sirf dikhayega kya delete hoga (safe)
-
-4. Command : "git clean -fd"
--- Directories bhi delete karna ho toh
-
-## 16. What is 'conflict' in git?
--> Git usually manages merges automatically, but conflicts occur when two branches edit the same line or when one branch deletes a file that another edits.
-
-## 17. What is the meaning of 'Index' in GIT?
-1. Defination
--- Index ko Git me "Staging Area" bhi bolta hain
--- Ye ek temporary area hai jahan hum changes ko commit karne se pehle ready rakhte hain
-👉 Simple:
-Index = “Commit se pehle ka waiting area”
-
-## 18. How do you change the last commit in git?
-1. Defination
--- Last commit ko change karne ke liye use hota hai:
--- Isse tum:
-    -- Last commit ka message change kar sakte ho
-    -- Ya usme new changes add/remove kar sakte ho
--- Simple: Ya usme new changes add/remove kar sakte ho
-
-2. Commands: "git commit --amend"
-
-
-## 19. What is `git checkout`?
--> git checkout help us to switch between  branches , created new branch, switch to remote branch
-
-## 20. How do you switch branches in Git?
-"git checkout branchname" or "git switch branchname" -> Switch To Local
-"git checkout -b branch origin/branch" or "git switch -c branch origin/branch" -> Switch to Remote
-"git checkout -b branch" or "git switch -c branch" -> Create new Branch
-
-## 21 : Name Some popular Git Hosting services?
--> GitLab , GitHub , VSCode Oline , Bitbucket
-
-## 22 : What are the different types of Git repositories?
-1. Defination
-🔹 Non-Bare Repository
--- Ye normal repo hota hai jisme:
-    - Code files hoti hain
-    - Working directory hoti hai
-    - Tum directly code edit kar sakte ho
--- Simple : Non-bare = Developer ka working repo
-.....
-🔹 Bare Repository
--- Isme : 
-    - Sirf Git data hota hai (no working files)
-    - Code edit nahi kar sakte
-    - Mainly sharing / central server ke liye use hota hai
--- Simple : Bare = Sirf storage repo (no direct editing)
-
-2. Trading Firm Example
-Soch ek Trading Firm hai jahan system develop ho raha hai:
-🔹 Non-Bare Repo = Developer Terminal
-    -- Har developer ke paas apna system hai
-    -- Wo code likh raha hai
-    -- Test kar raha hai
-    -- Changes commit kar raha hai
-👉 Ye hai Non-bare repo (BNDTRD-AMIT)
-......
-🔹 Bare Repo = Central Trading Server
-    -- Ye ek central server hai
-    -- Yahan koi directly code edit nahi karta
-    -- Sab log yahan:
-        -- push karte hain
-        -- pull karte hain
-👉 Ye hai Bare repo (UAT)    
-
-
-## 23 : How does Git handle file deletion?
--> "git rm --cached <file_name>"
-
-## 24 : How can you create an alias in Git?
--> Alias ka use Large Git commands ko Chote krna ka liya hota.
-"git config --glbal alias.<alias_name>'<git_command>'"
-
-## 25 : How do you rename a branch in Git?
--> git branch -m <new_branch_name> : Rename Current Branch
--> git branch -m <old_branch_name><new_branch_name> : Different Branch
-
-## 26 : What is the difference between git fetch and git pull?
--> git fetch : git fetch retrieves updates from the remote repository but does not merge them into the local branch, allowing you to review changes before integrating.
--> git pull : git pull fetches updates from the remote repository and immediately merges them into the current local branch (equivalent to git fetch followed by git merge).
-
-## 27 : Explain Git rebase and when do you use it?
-1. Defination
-👉 Git Rebase ka matlab hai:
-    Apni branch ke commits ko uthake kisi dusri branch ke latest commits ke upar “replay” karna
-👉 Simple:
-Rebase = “Apni changes ko latest base ke upar shift kar dena (clean history ke saath)”
-
-2. Example :
--- Soch ek Trading Firm hai:
-    - main branch = Live trading system
-    - Tumhari branch = New feature (e.g., new risk engine)
--- Scenario:
--- Day 1: 
-    - Tumne branch banayi
-    - Kaam start kiya
--- Day 5 : 
-    - main branch me dusre devs ne
-    - Bugs Fex
-    - Performace Imporvement Kiya
-👉 Ab tumhari branch old base pe hai
-❌ Without Rebase:
-    - Direct merge karoge → history messy
-    - Confusing commits
-✅ With Rebase:
-    - "git checkout feature-branch"
-    - "git rebase main"
-👉 Matlab:
-    - Tumhare commits ko uthake
-    - Latest main ke upar rakh diya
-
-
-## 28 : How will you create a git repository?
-1. Donload Git on your system
-2. Create a Project in the location where you want your repository.
-3. Open Terminal or Command Prompt.
-4. Run 'git init.'
-
-## 29 : What differentiates between the commands git remote and git clone?
-1. git remote : git remote manages connections to remote repositories. It lets you add, remove, and view remotes linked to a local project, but it does not download any files.
-2. git clone : git clone creates a local copy of an existing remote repository, including all files, branches, and commit history, so you can start working immediately.
-
-## 30 : What are the benefits of using a pull request in a project?
-1. Code Review 
-2. Collaboration
-3. Version Control
-
-## 31 : What is a Git bundle?
-1. Defination
-👉 Git Bundle ek tarika hai jisme:
-    Poora Git repository (ya uska kuch part) ek single file me pack karke share kiya jata hai
-    - Ye ek .bundle file hoti hai
-    - Offline sharing ke liye use hoti hai
-👉 Simple:
-Git Bundle = “Repo ka zip file (with full history)”
-
-2. Trading Firm Example
--- Soch ek Trading Firm hai jahan:
-    - Tum ek secure environment me kaam kar rahe ho
-    - Internet allowed nahi hai 🔒
-    - GitHub access bhi blocked hai
--- Problem: Tumhe apna Trading System code dusri team ko dena hai , No GitGub , No Network
--- Solution : Git Bundle
-
-3. Real Scenario
--- Tum bolte ho: 👉 “Main poora repo ek file me pack karke deta hoon”
--- Commands : "git bundle create trading.bundle --all"
-            - Trading.bundle = poora repo + history
--- Dusri team : "git clone trading.bundle"
-
-
-
-## 32 : What are the advantages of Git over SVN?
-1. Git -> Distributed Version Control , each dev has it own copy , main copy secure
-   SVN -> Centralized model.
-2. Git -> Faster Proformance  due to local operation
-   SVN -> requires netwrk communcation for many actions.
-3. Git -> Branches and Merging lightweigth and eddective
-   SVN -> Heavy and more complex
-4. Git -> Can work offline ,
-   SVN -> Dont
-5. Git -> Better Conflict Resolve Tool ,
-   SVN -> Not better then GIT
-
-## 33 : What is git stash?
--> The git stash is a command used to temporarily save changes that are not yet ready to be committed. It allows developers to switch branches or work on something else without losing their progress. Stashed changes can be reapplied later using git stash pop or git stash apply.
-
--> Commands 
-    - Save Current changes : "git stash"
-    - View stashes : "git stash list"
-    - Reapply the most recent stash and remove it from stash history : "git stash pop"
-    - Reapply a stash without removing it from history : "git stash apply"
-    - Delete a specific stash : "git stash drop stash@{n}"
-
-
-## 34 : How do you revert a commit that has already been pushed and made public?
-1. Checkout the Branch: Switch to the branch where you want to revert the commit.
-ommands: git checkout <branch-name>
-
-2. Find the Commit to Revert: Use 'git log' to find the commit hash of the commit you want to revert.
-Commands: git log
-
-3. Revert the Commit: Use 'git revert' followed by the commit hash of the commit you want to revert.
-Commands: git revert <commit-hash>
-
-## 35 : Explain the difference between reverting and resetting?
-1. Defination
-🔹 git reset
-    👉 History ko peeche le jata hai (rewrite karta hai)
-        - Commits remove ho jate hain (local se)
-        - Dangerous ho sakta hai
-    👉 Simple:
-    Reset = “Past ko change karna”
-🔹 git revert
-    👉 Ek naya commit banata hai jo previous change ko undo karta hai
-        - History safe rehti hai
-        - Team-safe command
-    👉 Simple:
-    Revert = “Galti ko reverse karna without deleting history”
-
-## 36 : What is the difference between git reflog and log?
-1. Defination
-🔹 git log
-    👉 Commit history dikhata hai (official history)
-        - Branch ke commits
-        - Clean , Visible timeline
-    👉 Simple: git log = “Project ki official history”
-🔹 git reflog
-    👉 HEAD aur branch movements ka record dikhata hai
-        - Reset, rebase, checkout sab track hota hai
-        - Even deleted commits bhi mil sakte hain
-    👉 Simple: git reflog = “Hidden activity log / recovery log”
-
-2. Trading Firm
--- Soch ek Trading Firm hai
-🔹 git log = Official Trade Book 📊
-        - Sirf valid trades dikhte hain
-        - Final executed transactions
-    Example : 
-        - Buy Order
-        - Sell Order
-        - Final System Upates
-    ✔️ Clean
-    ✔️ Auditable
-🔹 git reflog = Internal Activity Log 🧾
-    - Sab kuch track hota hai:
-        - Order Place Kiya
-        - Cancel Kiya
-        - Modify Kiya
-        - System RollBack hua
-    👉 Even: Deleted trades ka trace bhi mil sakta hai 
-    ✔️ Recovery ke kaam aata hai
-    ✔️ Hidden/internal tracking
-
-## 37 : What is the HEAD in Git?
--> HEAD in Git is a reference to the latest commit on the currently checked-out branch.
--> It determines which commit and branch you are working on.
--> When switching branches, HEAD updates to point to the latest commit of the new branch.
--> If in a detached HEAD state, it means you are working on a specific commit instead of a branch.
-
-## 38 : What is the purpose of 'git tag -a'?
-1. Defination
-👉 git tag -a ka use hota hai:
-    Annotated tag create karne ke liye (with extra information)
-Isme Hote Hai :
-    - Tag name
-    - Message
-    - Author info
-    - Date
-👉 Simple:
-git tag -a = “Important version ko proper label + details ke saath mark karna”
-
-2. Example :
-Soch ek Trading Firm hai:
-Tumne ek stable trading system release kiya 🚀
-    - Version 1.0 → Live gaya
-    - Sab kuch tested & approved
-👉 Ab tum chahte ho:
-    - Is version ko clearly mark karo
-    - Future me easily identify ho
-
-3. Command : "git tag -a v1.0 -m "Stable Trading release v1.0""
-👉 Matlab:
-    - Ye version officially mark ho gaya
-    - Saath me description bhi add ho gayi
--- Push annotated tags to a remort repository
-"git push origin v1.0"
-
-## 39 : What is the difference between 'HEAD', 'working tree' and 'index' in Git?
--> HEAD : reference/Point To current commit/Branch -> Located in .git/HEAD
--> Working Tree : directory where your project files are -> loacl Project directoy
--> Index : Staging Area -> Loacted in .git/index 
-
-## 40 : How to resolve a conflict in Git?
--> To resolve a conflict in Git
-    - Identify Conflict: Git will alert you of a conflict during merge or rebase.
-    - Open the Conflicted File: You'll see conflict markers like <<<<<<< HEAD, =======, and >>>>>>>.
-    - Resolve the Conflict: Edit the file to keep your changes, the incoming changes, or a combination of both.
-    - Stage the Resolved File: Use git add <file> to mark the conflict as resolved.
-    - Commit the Changes: Run git commit to complete the merge.
-    - Continue Rebase (if applicable): Use git rebase --continue if you were rebasing.
-
-## 41 : Explain the difference between 'git merge' and 'git rebase' and when you would use each?
--> git merge combines two branches and creates a merge commit
-   git rebase reapplies commits from one branch on top of another
-
--> git merge Preserves both branches’ histories and structure
-   git rebase Rewrites commit history to make it linear
-
--> git merge Result in Merge commit
-   git rebase Creates a clean, straight history without merge commits
-
--> Common in collaborative environments
-   Useful for personal branches and cleanup before pushing
-
-## 42 : What language is used in GIT?
--> c.
-
-## 43 : How do you add a file to the staging area?
--> git add .
--> git add filename
-
-## 44 : What is git diff?
--> git diff ka use hota hai: Code me hue changes ko compare karne ke liye
-    - Line-by-line difference dikhata hai
-    - Kya add hua (+)
-    - Kya remove hua (−)
--> Simple: git diff = “Code me kya change hua hai uska comparison”
-
-## 45 : What is a Git commit hash?
--> unique identifier (SHA-1) for each commit 
--> helps to reference and track specific commits in the repository
--> can use it to check out or reset to a particular commit.
-
-## 46 : What is a detached HEAD state?
--> detached HEAD state occurs when you check out a specific commit rather than a branch.
--> In this state, commits are not attached to any branch, meaning they may be lost if not properly managed.
-
-## 47 : How can you delete a remote Git branch?
--> "git push origin --delete <branch_name>"
-
-## 48 : What is the purpose of got cherry-pick?
--> 👉 git cherry-pick ka use hota hai:
-Kisi specific commit ko ek branch se uthake dusri branch me apply karne ke liye
-👉 Simple:
-Cherry-pick = “Sirf ek particular change ko copy karke dusri branch me lana”
-
--> Command : git cherry-pick <commid-id>
-
-
-## 49 : What does git ls-files do?
--> List Out all the Files that are Currently tracked By git
-
-## 50 : How do you fetch all remote branches?
--> git fetch -all
-
-# Git Hub Question From ChatGpt
-## Git Fundamentals (Must Know – 100% Asked)
-What is Git?
-What is GitHub and how is it different from Git?
-What is a repository in GitHub?
-What is the difference between local repository and remote repository?
-What is a commit?
-What is the difference between git add and git commit?
-What is the difference between git fetch and git pull?
-What is the purpose of git clone?
-What is the purpose of git status?
-What is the purpose of git log?
-
-## Branching Concepts
-What is a branch in Git?
-Why do we use branches?
-What is the difference between main/master branch and feature branches?
-What is git checkout vs git switch?
-What is git branch command used for?
-What is the difference between branching and forking?
-What is git branch -d vs -D?
-
-## Merging & Rebasing
-What is git merge?
-What is git rebase?
-Difference between merge vs rebase?
-What is a merge conflict?
-How do you resolve merge conflicts?
-What is fast-forward merge?
-What is squash merge?
-
-## Commits & History Management
-What is the difference between:
+-- Git distributed system hai (har developer ke paas full repository hoti hai)
+-- Git fast aur lightweight hai
+-- Offline bhi kaam kar sakte ho
+-- Mostly GitHub / GitLab / Bitbucket ke saath use hota hai
+
+4. Interview me kaise bolna hai
+-- Git ek Distributed Version Control System hai
+-- jo source code ke changes ko track karne ke liye use hota hai.
+-- Iski help se developers code history maintain kar sakte hain,
+-- previous versions pe revert kar sakte hain aur multiple developers ek hi project par collaborate kar sakte hain.
+
+## What is GitHub and how is it different from Git?
+1. Analogy
+-- Socho Git ek diary hai jisme tum apne project ke saare changes likhte ja rahe ho.
+    - Tum diary me likhte ho → kya change hua
+    - Kab change hua
+    - Kisne change kiya
+-- Lekin agar team ke 5 log ek project pe kaam kar rahe ho, to diary ko sabko share karna padega.
+-- Yaha GitHub aata hai.
+-- GitHub ek online place (cloud platform) hai jaha Git repository store hoti hai, taki team ke sab log internet ke through same project pe collaborate kar sake.
+
+2. Techincal
+-- Git 
+    - Ek Version Control System hai
+    - Local machine pe code changes track karta hai
+    - Commit history maintain karta hai
+-- GitHub
+    - Ek cloud-based hosting platform hai jo Git repositories ko host karta hai
+    - Collaboration features deta hai:
+        - Pull Requests
+        - Code Review
+        - Issue Tracking
+        - CI/CD integration
+
+3. Important Points
+-- Git = Tool
+-- GitHub = Platform / Service
+    - Git bina GitHub ke bhi use ho sakta hai
+    - GitHub sirf hosting aur collaboration ke liye hai
+-- Similar Platfrms : 
+    - GitLab
+    - BitBucket
+
+4. Interview
+-- Git ek distributed version control system hai jo code changes ko track karta hai.
+-- GitHub ek cloud-based platform hai jo Git repositories ko host karta hai aur collaboration features jaise pull requests, code review aur issue tracking provide karta hai.
+-- Git ek tool hai jabki GitHub ek hosting service hai.
+
+## What is a repository in GitHub?
+1. Analogy 
+-- Socho repository ek project folder jaisa hai.
+-- Jaise tumhare laptop me ek folder hota hai:
+    BankingApp/
+    ├── Login.cs
+    ├── AccountService.cs
+    ├── README.md
+-- Is Folder me :
+    - Code files
+    - Project files
+    - Documentation
+-- Sab stored hote hain.
+👉 Git repository bhi ek project folder hi hota hai, lekin usme code ke saare changes ka history bhi store hota hai.
+
+2. Techincal
+-- Repository (Repo) ek storage location hoti hai jaha:
+    - project ka source code
+    - commit history
+    - branches 
+    - configuration files.
+-- store hote hain.
+-- GitHub me repository online hosted project storage hoti hai.
+
+3. Important Commands
+git init        # new repository create
+git clone <url> # existing repo download
+
+4. Interview
+-- Git repository ek project storage hoti hai jaha source code, commit history aur branches store hote hain. Ye local machine pe bhi ho sakti hai aur GitHub jaise remote platform pe bhi host ho sakti hai.
+
+## What is the difference between local repository and remote repository?
+1. Analogy
+-- Socho tum ek project file apna laptop pe bana rahe ho.
+👉 Local Repository
+    - Tumhare laptop me stored project 
+    - Sirf tum access kar sakte ho.
+👉 Remote Repository
+    - Same project internet pe stored hai (GitHub)
+    - Team ke sab log access kar sakte hain
+Matlab :
+    - Local : Personal Workspace.
+    - Remote : Team Shared Workspace.
+
+2. Techincal 
+-- Local Repository
+    - Developer ki local machine pe stored Git repository
+    - Yaha developer commits aur changes karta hai
+-- Remote Repository
+    - Server / cloud pe stored repository
+    - Example : GitHub , GitLab , Bitbucket
+    - Team collaboration ke liye use hoti hai
+
+3. Imprtant Points
+-- Local repo me offline kaam ho sakta hai
+-- Remote repo team collaboration ke liya hota hai.
+-- Remote usually GitHub / GitLab pe host hota hai.
+
+4. Interview
+-- Local repository developer ki machine pe stored Git repository hoti hai jaha commits aur development hota hai.
+-- Remote repository server ya cloud platform jaise GitHub par hosted hoti hai jise multiple developers access karke collaborate kar sakte hain.
+
+## What is a commit?
+1. Analogy
+-- Socho tum project ka kaam kar rahe ho aur har important step pe screenshot save kar lete ho.
+-- Example :
+    - Step 1 : Login page banaya → Screenshot save
+    - Step 2 : Validation add ki → Screenshot save
+    - Step 3 : Bug fix kiya → Screenshot save
+-- Agar bad me problem aaye to tum pichle screenshot pe wapas ja sakte ho.
+👉 Git me ye screenshot hi commit hota hai.
+-- Commit matlab code ka ek saved snapshot at a particular time.
+
+2. Techincal 
+-- Commit Git me ek snapshot hota hai jo project ke changes ko permanently save karta hai.
+-- Commit me ye information hoti hai:
+    - Changed files
+    - Author
+    - Timestamp
+    - Commit message
+-- Har commit ka unique commit ID (hash) hota hai.
+
+3. Important Command
+    git add .
+    git commit -m "Added login validation"
+-- Explanation
+    - git add -> changes stage karta hai.
+    - git commit -> changes repository history me save karta hai.
+
+4. Important Points
+-- Commit ek snapshot of project hota hai.
+-- Har commit ka unique hash ID hota hai.
+-- Good practice: clear commit message likhna.
+
+5. Interview
+-- Git me commit ek snapshot hota hai jo project ke changes ko repository history me save karta hai.
+-- Har commit ka ek unique hash ID hota hai aur usme author, timestamp aur commit message store hota hai.
+
+## What is the difference between git add and git commit?
+👉 git add
+    -- Product ko cart me add karna
+    -- Abhi purchase nahi hua
+👉 git commit
+    -- Place Order button dabana
+    -- Ab purchase permanently ho gaya
+
+-- Important
+    - git add = staging 
+    - git commit = saving snapshot
+    - Commit sirf staged files ko save karta hai
+    - Agar file add nahi ki, to commit me include nahi hogi
+
+## What is the difference between git fetch and git pull?
+1. Analogy
+-- Socho team drive (Google Drive) me ek project file hai.
+👉 git fetch
+    - Tum sirf check karte ho ki drive me kya new changes aaye hain
+    - Lekin apni file me automatically apply nahi karte
+👉 git pull
+    - Tum drive se latest file download karke apni file update kar lete ho
+Matlab:
+    - fetch = sirf updates dekhna
+    - pull = updates lana + apply karna
+
+2. Technical
+-- git fetch
+    - Remote repository se latest commits download karta hai
+    - Lekin local branch ko update nahi karta
+-- git pull
+    - Remote repository se changes download karta hai aur merge bhi karta hai
+    - git pull = git fetch + git merge
+
+3. Important Commands
+    -> git fetch origin 
+    -> git pull origin main
+
+4. Important
+-- git fetch safe operation hai ,Ye sirf changes download karta hai
+-- git pull automatic merge karta hai , Pull se merge conflicts aa sakte hain
+
+## What is the purpose of git clone?
+-- git clone remote repository (GitHub, GitLab etc.) ki complete copy local machine me create karta hai.
+-- Command
+    git clone <repository-url>
+
+## What is the purpose of git status?
+1. Analogy
+-- Socho tum project pe kaam kar rahe ho aur tum check karna chahte ho:
+    - kaunsi files change hui hain
+    - kaunsi files commit ke liye ready hain
+    - kaunsi files abhi track nahi ho rahi
+👉 Ye sab check karne ke liye git status use hota hai.
+
+2. Techincal
+-- git status repository ka current state show karta hai.
+-- Ye batata hai:
+    - modified files
+    - staged files
+    - untracked files
+    - current branch
+
+3. Command
+-> git status 
+
+
+
+## What is the purpose of git log?
+1. Analogy
+-- Socho project ka ek history register hai jisme likhe hai :
+    - Kisne change kiya
+    - kab change kiya
+    - kya change kiya
+👉 Ye register git log hai.
+
+2. Technical
+-- git log repository ki commit history show karta hai.
+-- Ye Infomartion deta hai :
+    - commid ID
+    - author 
+    - date 
+    - commit message
+
+3. Important Commands
+-> git log 
+-> git log --oneline
+
+# 2. Branching Concepts
+## What is a branch in Git?
+1. Analogy
+-- Socho tum ek book likh rahe ho
+    - Main book → Original story
+    - Ab tum ek new idea try karna chahte ho (alternate ending)
+-- Ab tum ek new idea try karna chahte ho (alternate ending)
+👉 Git me branch bhi exactly yehi karta hai.
+-- Branch matlab main code se alag ek parallel line jaha new feature ya changes develop karte hain.
+
+2. Technical
+-- Branch Git me ek separate line of development hoti hai.
+-- Iska use hota hai:
+    - new feature develop karne ke liye
+    - bug fix karne ke liye
+    - experiment karne ke liye
+-- Default branch usually main ya master hoti hai.
+-- Developers new branches bana ke kaam karte hain aur baad me merge kar dete hain.
+
+3. Important Commands
+-> git branch feature-login
+-> git checkout feature-login
+-> git checkout -b feature-login
+-- Explanation
+    - git branch -> new branch create
+    - git checkout -> branch switch
+    - git checkout -b → create + switch
+
+4. Important Points
+-- Branches parallel developement allow harti hain
+-- Main branch stable code ke liye hoti hai.
+-- Features mostly feature branches me develop hote hain
+-- Baad me branch merge ki jati hai
+
+## Why do we use branches?
+1. Branches parallel development allow karti hain
+2. Main branch stable code ke liye hoti hai
+3. Features mostly feature branches me develop hote hain
+4. Baad me branch merge ki jati hai
+
+## What is the difference between main/master branch and feature branches?
+👉 Main/Master Branch
+    -- Project ki primary branch hoti hai
+    -- Stable aur production-ready code store hota hai
+
+👉 Feature Branch
+    -- New features develop karne ke liye separate branch create ki jati hai
+    -- Feature complete hone ke baad main branch me merge ki jati hai
+
+👉 Important Commands
+-> git checkout -b feature-login  (Feature branch create karna:)
+-> git checkout main    (Main branch me wapas jana:)
+-> git merge feature-login  (Feature branch merge karna:)
+
+👉 Important Points
+-- Main branch stable honi chahiye
+-- Fetaure branches short-lived hoti hain
+-- Directly main branch me development avoid karte hain
+-- Usually Pull Request ke through merge hota hai
+
+## What is git checkout vs git switch?
+1. Analogy
+-- Socho office me ek room hai jaha multiple desks hain.
+    - Desk A → Main project
+    - Desk B → Login feature
+    - Desk C → Payment feature
+-- 👉 Tum ek desk se dusre desk pe shift ho jate ho kaam karne ke liye.
+-- Ye desk change karna = branch change karna.
+-- Git me ye kaam pehle git checkout se hota tha.
+-- Baad me Git ne git switch introduce kiya jo sirf branch switching ke liye simple command hai.
+
+2. Technical
+-- git checkout
+    - Old command hai
+    - Multiple kaam karta hai 
+        - branch switch
+        - new branch create
+        - files restore
+    - Isliya thoda confusing ho jata hai.
+-- git switch 
+    - New command hai 
+    - Sirf branch switch karne ke liye design hua hai.
+    - More clear and Safe.
+
+3. Command
+-- Branch switch 
+    > git checkout feature-login
+    > git switch  feature-login
+-- New branch create + switch
+    > git checkout -b feature-login
+    > git switch -c feature-login
+
+
+
+## What is git branch command used for?
+1. Techincal
+-- git branch command ka use Git branches ko manage karne ke liya hota hai.
+-- Is command se hum:
+    - new branch create kar sakte hain.
+    - exisitng branches list kar sakte hain
+    - branch delete kar sakte hain
+-- Branch basically separate line of development hoti hai.
+
+2. Important Command
+-- Branch list dekhna
+    > git branch
+-- New branch create karna
+    > git branch feature-login
+-- Branch delete karna
+    > git branch -d feature-login
+
+## What is the difference between branching and forking?
+1. Analogy
+-- Socho company ka ek main project hai.
+👉 Branching
+    - Tum same project ke andar ek new working line bana lete ho
+    - Jaise: login-feature, payment-feature
+    - Sab kuch same project ke andar hota hai
+👉 Forking
+    - Tum poore project ki copy apne account me le lete ho
+    - Ab tum us project ko independently modify kar sakte ho
+MAtlab : 
+    - Branch = same project ke andar parallel development
+    - Fork = project ki full copy apne account me
+
+2. Technical
+-- Branching
+    - Same repository ke andar new branch create karna
+    - Mostly team development aur feature development ke liye use hota hai
+-- Forking 
+    - Kisi repository ki complete copy apne GitHub account me create karna
+    - Mostly open source contribution ke liye use hota hai
+
+3. Important Point
+-- Branching
+    - Same repository ke andar hota hai
+    - Team members ke saath use hota hai
+    - Fast aur lightweight
+-- Forking
+    - New repository create hoti hai
+    - Original repo se independent hoti hai
+    - Mostly open source workflow me use hota hai
+
+## What is git branch -d vs -D?
+1. Analogy
+-- Socho tumne ek temporary working notebook banayi thi experiment ke liye.
+-- Ab do Situtaion ho sakti hain :
+👉 git branch -d
+    - Agar notebook ka kaam complete ho chuka hai aur main notebook me merge ho gaya hai, to tum safe tarike se us notebook ko delete kar dete ho.
+👉 git branch -D
+    - Agar notebook merge nahi hui hai phir bhi tum force se delete kar dete ho, chahe kuch work lost ho jaye.
+-- Matlab : 
+    -d = safe delete
+    -D = force delete
+
+2. Techincal 
+-- git branch -d
+    - Branch ko safe tarike se delete karta hai
+    - Delete tabhi hoti hai jab branch already merged ho chuki ho
+-- git branch -D
+    - Branch ko forcefully delete karta hai
+    - Chahe branch merge hui ho ya nahi
+    - Actually : -D = force delete (-d + force)
+
+3. Command 
+-- Safe Delete : "git branch -d feature-login"
+-- Force Delete : "git branch -D feature-login"
+
+# 3.  Merging & Rebasing
+## What is git merge?
+1. Analogy
+-- Socho 2 developers alag-alag notebooks me kaam kar rahe hain.
+    - Developer A → Main notebook
+    - Developer B → Feature notebook (login feature)
+-- Ab jab login feature complete ho jata hai, to developer B ke changes main notebook me add kar diye jate hain.
+-- Ye notebooks ko combine karna = merge.
+
+2. Techincal Explanation
+-- git merge ka use ek branch ke changes ko dusri branch me combine karne ke liye hota hai.
+-- Generally WorkFlow
+    - Developer feature branch me kaam karta hai
+    - Feature complete hone ke baad usse main branch me merge kar diya jata hai
+
+3. Command
+-- Main branch pe switch karo : "git checkout main"
+-- Feature branch merge karo : "git merge feature-login"
+
+4. Important Points
+-- Merge branches ko combine karta hai
+-- Mostly feature branch → main branch me merge hota hai
+-- Kabhi kabhi merge conflicts aa sakte hain
+-- Git ek merge commit create karta hai
+
+## What is git rebase?
+1. Analogy
+-- Socho 2 developers ek hi document pe kaam kar rahe hain
+    - Main document updated ho gaya
+    - Tumhara feature document purane version se start hua tha
+👉 Ab tum apne changes ko latest document ke upar dobara apply kar dete ho.
+-- Isse history clean aur straight line me dikhti hai.
+-- Yehi Rebase hai.
+
+2. Techincal
+-- git rebase ek process hai jisme ek branch ke commits ko dusri branch ke latest commit ke upar replay kiya jata hai.
+-- Isse :
+    - History linear ho jati hai
+    - unnecessary merge commits avoid hote hain
+
+3. Important Commands
+> git checkout feature-login
+> git rebase main
+
+
+## Difference between merge vs rebase?
+1. Analogy
+-- Socho 2 notebooks hain.
+👉 Merge
+    - Dono notebooks ko combine kar dete ho
+    - Aur ek new page add ho jata hai jisme likha hota hai combine
+👉 Rebase
+    - Tum apne notes ko latest notebook ke upar dubara likh dete ho
+    - History straight line me ho jati hai
+
+2. Techincal
+| Feature                | Merge                        | Rebase          |
+| ---------------------- | ---------------------------- | --------------- |
+| History                | Non-linear                   | Linear          |
+| Extra commit           | Merge commit create hota hai | No merge commit |
+| Safe for shared branch | Yes                          | Risky           |
+
+3. Important
+-- Use Merge When
+    - shared branches
+    - team collaboration
+-- Use Rebase When
+    - clean history chahiye
+    - feature branch update karni ho
+
+## What is a merge conflict?
+1. Analogy
+-- Socho 2 developers same line edit kar dete hain.
+-- Example :
+    - Dev A : Price = 100;
+    - Dev B : Price = 120;
+-- Ab Git confuse ho jati hai kaunsa change correct hai,
+    - Is situation ko merge conflict kehte hain.
+
+2. Techincal
+-- Merge conflict tab hota hai jab Git automatically decide nahi kar pata ki kaunsa change apply kare.
+-- Usually conflicts hote hain jab:
+    - Same File ,
+    - Same Line ,
+    - Different Changes.
+
+## How do you resolve merge conflicts?
+1. Analogy
+-- Socho 2 log ek document me different changes kar dete hain.
+-- Ab tum manually decide karte ho kaunsa change correct hai aur final version save kar dete ho.
+-- Yehi conflict resolution hai.
+.................
+3. Techincal Steps 
+    -- Git file me conflict markers show karta hai:
+        <<<<<< HEAD
+        price = 100
+        =======
+        price = 120
+        >>>>>>> feature-branch
+    -- Developer ko correct code select karke markers remove karne hote hain.
+
+## What is fast-forward merge?
+1. Analogy
+-- Socho tum ek notebook me kaam kar rahe ho.
+    - Main notebook : Page 1 -> Page 2
+    - Feature Notebook : Page 1 -> Page 2 -> Page 3 -> Page 4
+-- Ab jab feature complete ho jata hai aur main notebook me koi new change nahi hua, to tum simply main notebook ko Page 4 tak forward kar dete ho.
+-- Koi Extra combine page nahi banta 
+-- Yehi Fast - Forward Merge hai.
+
+2. Technical
+-- Fast-forward merge tab hota hai jab target branch me koi new commits nahi hote aur Git simply branch pointer ko aage move kar deta hai.
+-- Is Case Me : 
+    - Koi merge commit create nahi hota 
+    - history linear rethi hai.
+
+3. Example 
+-- Before Merge
+   main:     A --- B
+                    \
+   feature:         C --- D
+-- After Fast - Forward Merge 
+    main : A --- B --- C --- D
+-- Git simply main pointer ko D tak move kar deta hai.
+
+4. Important Points
+-- Merge commit create nahi hota
+-- History clean aur linear hoti hai
+-- Tabhi possible hai jab main branch me new commits na ho.
+
+## What is squash merge?
+1. Analogy
+-- Socho tum feature pe kaam karte waqt 10 chhote-chhote notes likh dete ho:
+    - Fix Type
+    - Update button color
+    - Small bug fix
+    - Change API Call
+-- Ab jab Feature complete ho jati hai , Tum in sab notes ko ek single clean note me summarize kar dete ho:
+    "Add Complete login feature"
+-- Ye sab commits ko ek commit me convert karna = squash merge.
+
+2. Technical
+-- Squash merge me ek branch ke multiple commits ko combine karke ek single commit bana diya jata hai jab usse target branch me merge karte hain.
+-- Result :
+    - Feature branch ke multiple commits → 1 commit
+    - Project history clean aur simple ho jati hai.
+
+3. Example :
+-- Before Squash 
+    main:     A --- B
+                \
+    feature:        C --- D --- E --- F
+-- After squash merge
+    main: A --- B --- G
+👉 Yaha C, D, E, F → ek commit G ban gaya.
+
+# 4. Commits & History Management
+## What is the difference between: git reset and git revert
 git reset
-git revert
-What is git amend?
-What is git cherry-pick?
-What is git reflog?
-What is git stash?
-When should you use git stash?
+1. Analogy git reset 
+-- Socho tum notebook me 5 steps likh chuke ho.
+-- Agar tum step 5 aur 4 ko completely erase karke notebook ko step 3 tak wapas le jao, to kya hoga?
+-- Future ke steps history se hi remove ho jayenge
+-- ye git reset jaisa hai.
 
-##  Collaboration Using GitHub
+2. Technical git reset 
+-- git reset ka use repository ko kisi previous commit par move karne ke liye hota hai.
+-- Isme : 
+    - current branch pointer pichle commit pe shift ho jata hai
+    - newer commits history se remove ho sakte hain
+
+3. Important git reset 
+-- Exammple : "git reset --hard HEAD~1"
+-- Meaning : Last commit remove ho jayega.
+................
+git revert
+1. Analogy
+-- Socho notebook me step 5 galat likh diya.
+-- Lekin tum usse erase nahi karte.
+-- Tum ek new step likh dete ho jo step 5 ko undo kar deta hai.
+-- Matlab history safe rethi hai.
+-- Ye git revert hai.
+
+2. Technical
+-- git revert ek new commit create karta hai jo previous commit ke changes ko undo kar deta hai.
+-- Important
+    - Old commit delete nahi hota
+    - History safe rethi hai.
+
+3. Important Command
+git revert <commit-Id>
+.........................
+Difference In git revert and git reset
+| Feature       | git reset        | git revert     |
+| ------------- | ---------------- | -------------- |
+| History       | Rewrite hoti hai | Safe rehti hai |
+| Commit delete | Yes              | No             |
+| New commit    | No               | Yes            |
+| Use case      | Local changes    | Shared repo    |
+
+
+
+
+
+## What is git amend?
+1. Analogy
+-- Socho tumne notebook me ek entry likhi: "Add Login Feature"
+-- Baad me tumhe pata chala:
+    - commit message galat hai
+    - ya ek file add karna bhool gaye
+-- Ab tum new entry likhne ke bajaye usi last entry ko edit kar dete ho.
+👉 Ye last entry ko modify karna = git amend.
+
+2. Techincal
+-- git commit --amend ka use last commit ko modify karne ke liye hota hai.
+-- Isse Tum :
+    - last commit message change kar sakte ho
+    - last commit me extra changes add kar sakte ho
+-- Important: Ye last commit ko replace kar deta hai
+
+3. Important Commands
+-- Commit message change karna  : "git commit --amend -m "Updated login feature""
+-- Last Commit me new changes add karna :
+    "git add login.cs"
+    "git commit --amend"
+
+4. Important
+-- Sirf last commit modify hota hai
+-- New commit create nahi hota
+-- Commit rewrite ho jata hai
+-- Shared branch me carefully use karna chahiye
+
+## What is git cherry-pick?
+1. Analogy
+-- Socho 2 NoteBooks hain
+    - Notebook A → Main project
+    - Notebook B → Feature work
+-- Notebook B me 10 changes likhe hain, lekin tumhe sirf ek specific change chahiye.
+-- To tum sirf wahi ek line copy karke main notebook me add kar dete ho.
+👉 Ye specific commit ko copy karna = git cherry-pick.
+
+2. Techincal
+-- git cherry-pick ka use ek specific commit ko ek branch se uthakar dusri branch me apply karne ke liye hota hai.
+-- Matlab : 
+    - Puri branch merge nahi hoti
+    - Sirf selected commit apply hota hai
+
+3. Important
+git cherry-pick <commit-id>
+
+## What is git reflog?
+1. Analogy
+-- Socho tum notebook me kaam kar rahe ho aur galti se kuch pages delete ho gaye.
+-- Normal history me wo pages nazar nahi aate, lekin tumhare paas ek hidden activity log hai jisme likha hai:
+    - kab page add hua
+    - kab delete hua
+    - kab change hua
+-- Is log ki help se tum lost page wapas la sakte ho
+👉 Git me ye hidden activity log = git reflog.
+
+2. Techincal
+-- git reflog repository ke HEAD aur branch references ka history track karta hai.
+-- Ye Batata Hai : 
+    - branch kab move hui
+    - reset kab hua
+    - rebase kab hua
+    - commits kab change hue
+-- Iske Help se lost commits recover kiya ja saktea hain.
+
+3. Important Command
+> git reflog
+
+4. Important Points
+-- Git ka safety log hai
+-- Lost commits recover karne me help karta hai
+-- Reset / rebase ke baad bhi commits mil sakte hain
+-- Default 90 days tak history store hoti hai
+
+## What is git stash?
+1. Analogy
+-- Socho tum project pe kaam kar rahe ho, lekin kaam abhi complete nahi hua.
+-- Achanak manager bolta hai: "Pehle ek urgent bug fix karo."
+-- Ab tum current incomplete work ko temporarily side me rakh dete ho aur bug fix karne lagte ho.
+-- Baad me wapas us work ko resume kar lete ho.
+👉 Git me ye temporary save karna = git stash.
+
+2. Techincal 
+-- git stash ka use current uncommitted changes ko temporarily store karne ke liye hota hai.
+-- Ye : 
+    - Working directory ko clean kar deta hai.
+    - changes ko stash stack me store kar deta hai
+-- Baad me developer stash ko wapas apply kar sakta hai.
+
+3. Commands 
+-- Changes stash karna : "git stash"
+-- Stash list dekhna : "git stash list"
+-- Stash apply karna : "git stash apply"
+-- Stash apply + remove : "git stash pop"
+
+4. Important Points
+-- Temporary storage hota hai
+-- Commit create nahi hota
+-- Multiple stashes stack me store ho sakte hain
+-- Urgent branch switch ke time usefull hota hai.
+
+
+## When should you use git stash?
+1. Analogy
+-- Socho Tum Feature develop kar raho ho , lekin
+    - kaam incomplete hai
+    - commit karna nahi chahte
+-- Aur tumhe branch switch karna hai.
+-- To tum work ko temportary stash kar dete ho.
+
+# 5.  Collaboration Using GitHub
 What is a Pull Request (PR)?
 What is the purpose of code reviews in PR?
 What is a fork in GitHub?
@@ -705,24 +788,3 @@ How would you handle 100 developers working on the same repository?
 How would you manage hotfixes in production?
 How would you design a CI/CD pipeline using GitHub Actions?
 How do companies manage microservices repositories using GitHub?
-🎯 13. GitHub Best Practices
-Use small atomic commits
-Use descriptive commit messages
-Protect main branch
-Use pull request reviews
-Automate tests with GitHub Actions
-
-10 GitHub Concepts Every Engineer Must Know
-
-If you deeply understand these 10, most interviews clear ho jaate hain:
-
-Git vs GitHub
-Branching strategy
-Pull requests
-Merge vs Rebase
-Fork workflow
-Git stash
-Git reset vs revert
-GitHub Actions
-Conflict resolution
-Branch protection
