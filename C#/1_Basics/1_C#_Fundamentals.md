@@ -264,17 +264,87 @@
 → Value Type hi hai! Bas null hold karne ki extra ability hai Nullable<T> struct ki wajah se! 
 
 # SECTION 2 — Type System & Keywords
-
 ## What is the difference between var, explicit types, and dynamic?
+1. Techincal 
+-- Explicit  →  Compile time pe developer ne bataya
+-- var →  Compile time pe compiler ne khud decide kiya 
+-- dynamic  →  Runtime pe decide hoti hai
+
+2. Code
+    // ✅ Explicit — developer type likhta hai
+    int age = 25;
+    string name = "Ali";
+
+    // ✅ var — compiler khud samjhe (compile time pe fix!)
+    var age2 = 25;        // compiler: "yeh int hai"
+    var name2 = "Ali";    // compiler: "yeh string hai"
+    age2 = "hello";       // ❌ Error! Type fix ho chuki compile time pe
+
+    // ✅ dynamic — runtime pe decide
+    dynamic d = 25;       // int
+    d = "Hello";          // ✅ string — no error!
+    d = true;             // ✅ bool — no error!
+    d.Fly();              // ❌ Runtime Error! (compile pe nahi pakda)
+
+
 ## When should you use var and when should you avoid it?
+-- var tab use karna chahiye jab right side se type clearly obvious ho — jaise new keyword ke saath ya simple assignments mein — readability improve hoti hai.
+-- Avoid karna chahiye jab method return type unclear ho ya numeric precision important ho — wahan explicit type likhna code ko readable aur maintainable banata hai."
+-- var laziness ke liye nahi — clarity ke liye use karo!
+
 ## What is dynamic keyword? How is it different from object?
+1. Real World Analogy
+-- object → Sealed Envelope ✉️
+    Andar kuch bhi ho sakta hai — lekin use karne se pehle envelope kholna (cast) padega. Compiler jaanta hai envelope hai!
+-- dynamic → Surprise Package
+    Delivery aai — kya hai pata nahi, khologe tab pata chalega! Runtime pe jaake decide hoga kya karna hai iske saath!
+
+2. Techincal
+-- object  →  Compile time type checking  ✅ (safe)
+-- dynamic  →  Runtime type checking       ⚠️ (risky)
+
+3. Code
+-- object mein type compile time pe check hoti hai — use karne ke liye explicit cast karna padta hai, warna compile error aata hai.
+-- dynamic mein type checking runtime pe hoti hai — cast ki zaroorat nahi, type freely change ho sakti hai. Lekin galti bhi runtime pe pakdi jaati hai — jo production mein dangerous hai.
+-- dynamic mainly COM Interop, Reflection, ya external APIs ke saath use hota hai jahan type pehle se pata nahi hoti.
+
 ## What is the difference between const and readonly?
+1. Real Analogy
+-- const → Mathematical Formula 📐
+    PI = 3.14159 — hamesha se fixed hai, kabhi nahi badlega. Universe mein kahi bhi same rahega — compile time pe hi set!
+-- readonly → Birth Certificate 📜
+    Tumhari date of birth ek baar print hoti hai — baad mein change nahi ho sakti. Lekin yeh runtime pe decide hoti hai — jab tum paida hue tab!
+
+2. Technical Relation
+const     →  Compile time pe fix    →  Sirf primitive types
+readonly  →  Runtime pe fix         →  Koi bhi type
+
 ## Can readonly be set inside a constructor?
+-- realonly sirf 2 jagah set ho sakti hai :
+    1. Declaration pe
+    2. Constructor ke andar
+
 ## Can const be used with reference types?
+const sirf compile-time constants ke saath kaam karta hai — primitives aur string. Reference types runtime pe new se bante hain — isliye const unke saath kaam nahi karta.
+Agar reference type ko constant banana ho toh static readonly use karte hain.
+
 ## What is static keyword? What are static classes?
+-- static member class level pe hota hai — object banane ki zaroorat nahi, directly class se access karte hain. Memory mein sirf ek copy hoti hai jo sab share karte hain.
+-- static class mein sirf static members ho sakte hain aur iska object nahi ban sakta. Yeh mainly utility/helper methods ke liye use hoti hai — jaise Math, Console.
+
 ## What is the difference between static readonly and const?
+-- const compile time pe fix hota hai — sirf primitives aur string ke saath kaam karta hai.
+-- static readonly runtime pe set hota hai — DateTime.Now ya complex objects bhi assign kar sakte hain.
+-- Jab value truly universal ho — const. Jab runtime value chahiye lekin baad mein change na ho — static readonly."
+
 ## What is the sealed keyword on a class?
+-- sealed keyword class ko inherit hone se rokta hai — koi bhi us class ko extend nahi kar sakta.
+-- Method pe bhi sealed laga sakte hain — jo override chain rok deta hai.
+-- Use hota hai jab security, design integrity, ya performance important  ho — jaise string class khud sealed hai C# mein.
+
+
 ## What is the partial keyword in C#?
+-- Ek hi Class Ko Two Different cs File pe Bna Skta ha.
 
 # SECTION 3 — Strings
 
