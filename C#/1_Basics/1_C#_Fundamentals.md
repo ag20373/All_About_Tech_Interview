@@ -265,16 +265,16 @@
 
 # SECTION 2 — Type System & Keywords
 
-What is the difference between var, explicit types, and dynamic?
-When should you use var and when should you avoid it?
-What is dynamic keyword? How is it different from object?
-What is the difference between const and readonly?
-Can readonly be set inside a constructor?
-Can const be used with reference types?
-What is static keyword? What are static classes?
-What is the difference between static readonly and const?
-What is the sealed keyword on a class?
-What is the partial keyword in C#?
+## What is the difference between var, explicit types, and dynamic?
+## When should you use var and when should you avoid it?
+## What is dynamic keyword? How is it different from object?
+## What is the difference between const and readonly?
+## Can readonly be set inside a constructor?
+## Can const be used with reference types?
+## What is static keyword? What are static classes?
+## What is the difference between static readonly and const?
+## What is the sealed keyword on a class?
+## What is the partial keyword in C#?
 
 # SECTION 3 — Strings
 
@@ -301,3 +301,89 @@ Can you use ref and out with async methods?
 What is optional parameters in C#?
 What is named arguments in C#?
 What is the difference between ref, out and returning a Tuple?
+
+
+
+
+📌 SECTION 5 — Nullable & Null Handling
+
+What is a nullable type in C#?
+What is the difference between null and default value?
+What is the null coalescing operator ???
+What is the null coalescing assignment operator ??=?
+What is the null conditional operator ?.?
+What is the difference between ?. and null check if (x != null)?
+What is NullReferenceException? How do you prevent it?
+What are nullable reference types in C# 8+?
+What is the ! null forgiving operator in C#?
+What is the difference between default keyword for nullable vs non-nullable types?
+
+
+📌 SECTION 6 — Pattern Matching
+
+What is Pattern Matching in C#?
+What is the is pattern matching expression?
+What is the switch expression in C# 8+?
+What is the difference between switch statement and switch expression?
+What is a positional pattern in C#?
+What is a property pattern in C#?
+What is a tuple pattern in C#?
+What is a relational pattern in C#?
+What is a logical pattern (and, or, not) in C#?
+What is a list pattern in C# 11?
+
+
+📌 SECTION 7 — Tuples & Deconstruction
+
+What are Tuples in C#?
+What is the difference between Tuple<T> and ValueTuple?
+How do you name tuple elements in C#?
+What is tuple deconstruction in C#?
+What is the _ discard variable in C#?
+How are tuples useful as return types vs creating a class?
+What is the performance difference between Tuple and ValueTuple?
+Can you deconstruct a custom class in C#?
+What is positional deconstruction?
+When should you use Tuples vs creating a dedicated class/struct?
+
+
+📌 SECTION 8 — Type Conversion & Casting
+
+What is implicit conversion vs explicit conversion in C#?
+What is the difference between (int)x casting and Convert.ToInt32(x)?
+What is as keyword in C#?
+What is is keyword in C#?
+What is the difference between as and explicit casting?
+What is TryParse vs Parse?
+What are user-defined conversions (implicit operator, explicit operator)?
+What is checked and unchecked in C#?
+What is widening vs narrowing conversion?
+What is the difference between Convert.ToString() and .ToString()?
+
+
+📌 SECTION 9 — Modern C# Features
+
+What are records in C# 9+?
+What is the difference between record, record class, and record struct?
+What is init only setter in C#?
+What are global usings in C# 10?
+What are file-scoped namespaces in C# 10?
+What is required keyword in C# 11?
+What are primary constructors in C# 12?
+What is collection expressions in C# 12?
+What is the difference between with expression and object initializer?
+What are top-level statements in C# 9?
+
+
+📌 SECTION 10 — Miscellaneous but Important
+
+What is the difference between == and ReferenceEquals()?
+What is GetHashCode() and when should you override it?
+What is the nameof() operator?
+What is the sizeof() operator?
+What is typeof() vs GetType() in C#?
+What is the difference between Array and Span<T>?
+What is unsafe code in C#?
+What is the stackalloc keyword?
+What are preprocessor directives in C# (#if, #region, #pragma)?
+What is the difference between early-bound and late-bound in C#?
