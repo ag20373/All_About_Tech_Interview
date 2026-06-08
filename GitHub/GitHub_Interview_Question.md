@@ -18,18 +18,9 @@
     - Previous version pe revert kar sakte hain
     - Multiple developers ek project pe collaborate kar sakte hain
     - Different features ke liye branches bana sakte hain
-
-3. Important Points
--- Git distributed system hai (har developer ke paas full repository hoti hai)
 -- Git fast aur lightweight hai
 -- Offline bhi kaam kar sakte ho
 -- Mostly GitHub / GitLab / Bitbucket ke saath use hota hai
-
-4. Interview me kaise bolna hai
--- Git ek Distributed Version Control System hai
--- jo source code ke changes ko track karne ke liye use hota hai.
--- Iski help se developers code history maintain kar sakte hain,
--- previous versions pe revert kar sakte hain aur multiple developers ek hi project par collaborate kar sakte hain.
 
 ## What is GitHub and how is it different from Git?
 1. Analogy
@@ -42,31 +33,19 @@
 -- GitHub ek online place (cloud platform) hai jaha Git repository store hoti hai, taki team ke sab log internet ke through same project pe collaborate kar sake.
 
 2. Techincal
--- Git 
+-- Git (Tool)
     - Ek Version Control System hai
     - Local machine pe code changes track karta hai
     - Commit history maintain karta hai
--- GitHub
+    - Git bina GitHub ke bhi use ho sakta hai
+-- GitHub (Platform)
     - Ek cloud-based hosting platform hai jo Git repositories ko host karta hai
     - Collaboration features deta hai:
         - Pull Requests
         - Code Review
         - Issue Tracking
         - CI/CD integration
-
-3. Important Points
--- Git = Tool
--- GitHub = Platform / Service
-    - Git bina GitHub ke bhi use ho sakta hai
-    - GitHub sirf hosting aur collaboration ke liye hai
--- Similar Platfrms : 
-    - GitLab
-    - BitBucket
-
-4. Interview
--- Git ek distributed version control system hai jo code changes ko track karta hai.
--- GitHub ek cloud-based platform hai jo Git repositories ko host karta hai aur collaboration features jaise pull requests, code review aur issue tracking provide karta hai.
--- Git ek tool hai jabki GitHub ek hosting service hai.
+    - Similar PlatForms : Git Lab , Bit Bucket  
 
 ## What is a repository in GitHub?
 1. Analogy 
@@ -96,9 +75,6 @@
 git init        # new repository create
 git clone <url> # existing repo download
 
-4. Interview
--- Git repository ek project storage hoti hai jaha source code, commit history aur branches store hote hain. Ye local machine pe bhi ho sakti hai aur GitHub jaise remote platform pe bhi host ho sakti hai.
-
 ## What is the difference between local repository and remote repository?
 1. Analogy
 -- Socho tum ek project file apna laptop pe bana rahe ho.
@@ -116,19 +92,11 @@ Matlab :
 -- Local Repository
     - Developer ki local machine pe stored Git repository
     - Yaha developer commits aur changes karta hai
+    - Local repo me offline kaam ho sakta hai
 -- Remote Repository
     - Server / cloud pe stored repository
     - Example : GitHub , GitLab , Bitbucket
     - Team collaboration ke liye use hoti hai
-
-3. Imprtant Points
--- Local repo me offline kaam ho sakta hai
--- Remote repo team collaboration ke liya hota hai.
--- Remote usually GitHub / GitLab pe host hota hai.
-
-4. Interview
--- Local repository developer ki machine pe stored Git repository hoti hai jaha commits aur development hota hai.
--- Remote repository server ya cloud platform jaise GitHub par hosted hoti hai jise multiple developers access karke collaborate kar sakte hain.
 
 ## What is a commit?
 1. Analogy
@@ -149,6 +117,7 @@ Matlab :
     - Timestamp
     - Commit message
 -- Har commit ka unique commit ID (hash) hota hai.
+-- Good practice: clear commit message likhna.
 
 3. Important Command
     git add .
@@ -157,16 +126,8 @@ Matlab :
     - git add -> changes stage karta hai.
     - git commit -> changes repository history me save karta hai.
 
-4. Important Points
--- Commit ek snapshot of project hota hai.
--- Har commit ka unique hash ID hota hai.
--- Good practice: clear commit message likhna.
-
-5. Interview
--- Git me commit ek snapshot hota hai jo project ke changes ko repository history me save karta hai.
--- Har commit ka ek unique hash ID hota hai aur usme author, timestamp aur commit message store hota hai.
-
 ## What is the difference between git add and git commit?
+1. Analogy
 👉 git add
     -- Product ko cart me add karna
     -- Abhi purchase nahi hua
@@ -174,11 +135,11 @@ Matlab :
     -- Place Order button dabana
     -- Ab purchase permanently ho gaya
 
--- Important
-    - git add = staging 
-    - git commit = saving snapshot
-    - Commit sirf staged files ko save karta hai
-    - Agar file add nahi ki, to commit me include nahi hogi
+2. Techincal
+-- git add = staging 
+-- git commit = saving snapshot
+-- Commit sirf staged files ko save karta hai
+-- Agar file add nahi ki, to commit me include nahi hogi
 
 ## What is the difference between git fetch and git pull?
 1. Analogy
@@ -194,19 +155,13 @@ Matlab:
 
 2. Technical
 -- git fetch
-    - Remote repository se latest commits download karta hai
+    - Remote repository se latest commits download karta hai(Safe Operation)
     - Lekin local branch ko update nahi karta
+    - Command : **git fetch****
 -- git pull
     - Remote repository se changes download karta hai aur merge bhi karta hai
     - git pull = git fetch + git merge
-
-3. Important Commands
-    -> git fetch origin 
-    -> git pull origin main
-
-4. Important
--- git fetch safe operation hai ,Ye sirf changes download karta hai
--- git pull automatic merge karta hai , Pull se merge conflicts aa sakte hain
+    - command : **git pull origin main**
 
 ## What is the purpose of git clone?
 -- git clone remote repository (GitHub, GitLab etc.) ki complete copy local machine me create karta hai.
@@ -228,11 +183,7 @@ Matlab:
     - staged files
     - untracked files
     - current branch
-
-3. Command
--> git status 
-
-
+--Command : **git status** 
 
 ## What is the purpose of git log?
 1. Analogy
@@ -260,7 +211,6 @@ Matlab:
 -- Socho tum ek book likh rahe ho
     - Main book → Original story
     - Ab tum ek new idea try karna chahte ho (alternate ending)
--- Ab tum ek new idea try karna chahte ho (alternate ending)
 👉 Git me branch bhi exactly yehi karta hai.
 -- Branch matlab main code se alag ek parallel line jaha new feature ya changes develop karte hain.
 
@@ -272,21 +222,14 @@ Matlab:
     - experiment karne ke liye
 -- Default branch usually main ya master hoti hai.
 -- Developers new branches bana ke kaam karte hain aur baad me merge kar dete hain.
-
-3. Important Commands
--> git branch feature-login
--> git checkout feature-login
--> git checkout -b feature-login
--- Explanation
-    - git branch -> new branch create
-    - git checkout -> branch switch
-    - git checkout -b → create + switch
-
-4. Important Points
 -- Branches parallel developement allow harti hain
 -- Main branch stable code ke liye hoti hai.
--- Features mostly feature branches me develop hote hain
--- Baad me branch merge ki jati hai
+-- Features mostly feature branches me develop hote hain , Baad me merge ki jati hai.
+
+3. Important Commands
+-> **git branch feature-login** → new branch create
+-> **git checkout feature-login** → branch switch
+-> **git checkout -b feature-login** → create + switch
 
 ## Why do we use branches?
 1. Branches parallel development allow karti hain
@@ -307,12 +250,6 @@ Matlab:
 -> git checkout -b feature-login  (Feature branch create karna:)
 -> git checkout main    (Main branch me wapas jana:)
 -> git merge feature-login  (Feature branch merge karna:)
-
-👉 Important Points
--- Main branch stable honi chahiye
--- Fetaure branches short-lived hoti hain
--- Directly main branch me development avoid karte hain
--- Usually Pull Request ke through merge hota hai
 
 ## What is git checkout vs git switch?
 1. Analogy
@@ -383,19 +320,11 @@ MAtlab :
 -- Branching
     - Same repository ke andar new branch create karna
     - Mostly team development aur feature development ke liye use hota hai
+    - Fast aur lightweight
 -- Forking 
     - Kisi repository ki complete copy apne GitHub account me create karna
     - Mostly open source contribution ke liye use hota hai
 
-3. Important Point
--- Branching
-    - Same repository ke andar hota hai
-    - Team members ke saath use hota hai
-    - Fast aur lightweight
--- Forking
-    - New repository create hoti hai
-    - Original repo se independent hoti hai
-    - Mostly open source workflow me use hota hai
 
 ## What is git branch -d vs -D?
 1. Analogy
@@ -441,11 +370,6 @@ MAtlab :
 -- Main branch pe switch karo : "git checkout main"
 -- Feature branch merge karo : "git merge feature-login"
 
-4. Important Points
--- Merge branches ko combine karta hai
--- Mostly feature branch → main branch me merge hota hai
--- Kabhi kabhi merge conflicts aa sakte hain
--- Git ek merge commit create karta hai
 
 ## What is git rebase?
 1. Analogy
@@ -463,8 +387,13 @@ MAtlab :
     - unnecessary merge commits avoid hote hain
 
 3. Important Commands
-> git checkout feature-login
+> git fetch
+> git Checkout main
+> git pull origin main
+> git checkout featurebranch
 > git rebase main
+> (--continue , --abort...)
+> git push --force
 
 
 ## Difference between merge vs rebase?
@@ -547,10 +476,6 @@ MAtlab :
     main : A --- B --- C --- D
 -- Git simply main pointer ko D tak move kar deta hai.
 
-4. Important Points
--- Merge commit create nahi hota
--- History clean aur linear hoti hai
--- Tabhi possible hai jab main branch me new commits na ho.
 
 ## What is squash merge?
 1. Analogy
@@ -622,10 +547,6 @@ Difference In git revert and git reset
 | New commit    | No               | Yes            |
 | Use case      | Local changes    | Shared repo    |
 
-
-
-
-
 ## What is git amend?
 1. Analogy
 -- Socho tumne notebook me ek entry likhi: "Add Login Feature"
@@ -641,18 +562,16 @@ Difference In git revert and git reset
     - last commit message change kar sakte ho
     - last commit me extra changes add kar sakte ho
 -- Important: Ye last commit ko replace kar deta hai
+-- Sirf last commit modify hota hai
+-- New commit create nahi hota
+-- Commit rewrite ho jata hai
+-- Shared branch me carefully use karna chahiye
 
 3. Important Commands
 -- Commit message change karna  : "git commit --amend -m "Updated login feature""
 -- Last Commit me new changes add karna :
     "git add login.cs"
     "git commit --amend"
-
-4. Important
--- Sirf last commit modify hota hai
--- New commit create nahi hota
--- Commit rewrite ho jata hai
--- Shared branch me carefully use karna chahiye
 
 ## What is git cherry-pick?
 1. Analogy
@@ -670,6 +589,7 @@ Difference In git revert and git reset
     - Sirf selected commit apply hota hai
 
 3. Important
+git switch Branch_name
 git cherry-pick <commit-id>
 
 ## What is git reflog?
@@ -690,15 +610,13 @@ git cherry-pick <commit-id>
     - rebase kab hua
     - commits kab change hue
 -- Iske Help se lost commits recover kiya ja saktea hain.
-
-3. Important Command
-> git reflog
-
-4. Important Points
 -- Git ka safety log hai
 -- Lost commits recover karne me help karta hai
 -- Reset / rebase ke baad bhi commits mil sakte hain
 -- Default 90 days tak history store hoti hai
+
+3. Important Command
+> git reflog
 
 ## What is git stash?
 1. Analogy
@@ -714,18 +632,16 @@ git cherry-pick <commit-id>
     - Working directory ko clean kar deta hai.
     - changes ko stash stack me store kar deta hai
 -- Baad me developer stash ko wapas apply kar sakta hai.
+-- Temporary Storeage hota hai.
+-- Commit create nahi hota
+-- Multiple stashes stack me store ho sakte hain
+-- Urgent branch switch ke time usefull hota hai.
 
 3. Commands 
 -- Changes stash karna : "git stash"
 -- Stash list dekhna : "git stash list"
 -- Stash apply karna : "git stash apply"
 -- Stash apply + remove : "git stash pop"
-
-4. Important Points
--- Temporary storage hota hai
--- Commit create nahi hota
--- Multiple stashes stack me store ho sakte hain
--- Urgent branch switch ke time usefull hota hai.
 
 
 ## When should you use git stash?
@@ -736,22 +652,122 @@ git cherry-pick <commit-id>
 -- Aur tumhe branch switch karna hai.
 -- To tum work ko temportary stash kar dete ho.
 
-# 5.  Collaboration Using GitHub
-What is a Pull Request (PR)?
-What is the purpose of code reviews in PR?
-What is a fork in GitHub?
-What is the difference between fork and clone?
-How do you contribute to an open-source project using GitHub?
-What are GitHub Issues?
-What are GitHub Discussions?
+# 5. Collaboration Using GitHub
+## What is a Pull Request (PR)?
+1. Analogy
+-- Socho tum company me kaam kar rahe ho.
+    - Tumne apni feature branch me Login Feature complete kar diya.
+    - Lekin tum directly main branch me code nahi daal sakte
+-- Tum manager ko bolte ho:
+    "Maine changes kar diye hain. Please review karo aur agar sab sahi hai to main project me add kar do."
+-- yahi Pull Request Hai.
 
-## Access Control & Permissions
+2. Technical Explanation
+-- Pull Request (PR) GitHub ka ek feature hai jiske through developer apni branch ke changes ko kisi dusri branch (usually main) me merge karne ki request karta hai.
+-- PR me team:
+    - Code Review karti hai
+    - Suggestions deti hai
+    - Discussion karti hai
+    - Approve ya Reject karti hai
+-- Approval ke baad PR merge hota hai.
+-- PR Git ka nahi, GitHub/GitLab/Bitbucket ka feature hai
+-- Code Review ke liye use hota hai
+-- Team collaboration improve karta hai
+-- Direct commits to main branch avoid karne me help karta hai
+-- PR me comments aur discussions ho sakti hain
+
+## What is the purpose of code reviews in PR?
+- Techincal
+-- Code Review ek process hai jisme team members Pull Request ke code ko review karte hain before merge.
+-- Purpose
+    - Bugs identify karna
+    - Code quality improve karna
+    - Coding standards maintain karna
+    - Knowledge sharing karna
+    - Security issues detect karna
+
+## What is a fork in GitHub?
+1. Analogy
+-- Socho kisi ne GitHub par ek project upload kiya hai.
+-- Tum us project me contribution karna chahte ho, lekin tumhare paas us repository ka write access nahi hai.
+-- To Tum : 
+    - Project ki apne account me copy bana lete ho
+    - Us copy me changes karte ho
+    - Fir original owner ko PR bhejte ho
+-- Ye copy banana = Fork kehlata hai.
+
+2. Techincal
+-- Fork GitHub ka feature hai jo kisi repository ki copy tumhare GitHub account me create karta hai.
+-- Fork Karne ke Baad
+    - Tum independently changes kar sakte ho
+    - Original repository affect nahi hoti
+    - Baad me Pull Request ke through contribution kar sakte ho
+-- Fork GitHub feature hai, Git command nahi
+-- Mostly Open Source Projects me use hota hai
+-- Original repository se separate copy banti hai
+-- Changes automatically original repo me nahi jate
+
+## What is the difference between fork and clone?
+1. Analogy
+-- Socho ek project GitHub par pada hai.
+-- Fork : Tum project ki copy apne GitHub account me banate ho.
+-- Clone : Tum project ko GitHub se apne laptop me download karte ho.
+
+2. Techical
+| Fork                             | Clone                          |
+| -------------------------------- | ------------------------------ |
+| GitHub feature                   | Git command                    |
+| GitHub account me copy banti hai | Local machine me copy aati hai |
+| Open-source contribution ke liye | Development ke liye            |
+| Remote to Remote                 | Remote to Local                |
+
+
+## How do you contribute to an open-source project using GitHub?
+1. Analogy
+-- Socho kisi ne public project banaya hai.
+-- Tum directly uski notebook edit nahi kar sakte.
+-- To : 
+    - Copy banao (Fork)
+    - Apni copy me changes karo
+    - Owner ko review ke liye bhejo (PR)
+
+2. Technicals
+Fork Repository
+      ↓
+Clone Fork
+      ↓
+Create Branch
+      ↓
+Make Changes
+      ↓
+Commit & Push
+      ↓
+Create Pull Request
+      ↓
+Code Review
+      ↓
+Merge
+
+3. Commands
+git clone <fork-url>
+git checkout -b feature-fix
+git add .
+git commit -m "Fixed bug"
+git push origin feature-fix
+
+## What are GitHub Issues?
+GitHub Issues project me bugs, tasks, feature requests aur improvements ko track karne ke liye use hote hain. Ye project management aur collaboration ko improve karte hain.
+
+## What are GitHub Discussions?
+GitHub Discussions ek forum-like feature hai jo project contributors aur users ko questions, ideas, feedback aur general discussions karne ki facility deta hai. Ye Issues se alag hai kyunki Discussions ka focus conversation par hota hai, task tracking par nahi.
+
+# 6. Access Control & Permissions
 What are GitHub collaborators?
 What are GitHub teams and organizations?
 What is branch protection rule?
 What is required status check in GitHub?
 
-## GitHub Workflow & CI/CD
+# 7. GitHub Workflow & CI/CD
 What is GitHub Flow?
 What is Git Flow?
 What are GitHub Actions?
@@ -759,7 +775,7 @@ What is CI/CD pipeline in GitHub?
 How do GitHub Actions automate builds and tests?
 What is a workflow file in GitHub Actions?
 
-## Advanced Git Concepts
+# 8. Advanced Git Concepts
 What is a detached HEAD state?
 What is submodule in Git?
 What is monorepo vs multirepo?
@@ -767,22 +783,25 @@ What is git bisect?
 What is git tag?
 Difference between lightweight tag vs annotated tag?
 
-## Large Scale Repository Management
+# 9. Large Scale Repository Management
 What is Git LFS (Large File Storage)?
 Why is Git not ideal for large binary files?
 How does GitHub handle large repositories?
-🔍 10. Debugging & Troubleshooting
+
+# 10. Debugging & Troubleshooting
 How do you undo a commit?
 How do you remove a file from Git history?
 What happens if you accidentally push sensitive data?
 How do you fix a broken commit history?
-🏭 11. Real Production Questions (Very Common)
+
+# 11. Real Production Questions (Very Common)
 How do you manage multiple developers working on the same project?
 How do you enforce code review policies?
 How do you manage release versions using GitHub?
 How do you maintain clean commit history?
 What branching strategy do you use in production?
-🧩 12. System Design / Architecture Questions
+
+# 12. System Design / Architecture Questions
 Design a Git workflow for a large engineering team
 How would you handle 100 developers working on the same repository?
 How would you manage hotfixes in production?
