@@ -788,22 +788,3 @@ What is Git LFS (Large File Storage)?
 Why is Git not ideal for large binary files?
 How does GitHub handle large repositories?
 
-# 10. Debugging & Troubleshooting
-How do you undo a commit?
-How do you remove a file from Git history?
-What happens if you accidentally push sensitive data?
-How do you fix a broken commit history?
-
-# 11. Real Production Questions (Very Common)
-How do you manage multiple developers working on the same project?
-How do you enforce code review policies?
-How do you manage release versions using GitHub?
-How do you maintain clean commit history?
-What branching strategy do you use in production?
-
-# 12. System Design / Architecture Questions
-Design a Git workflow for a large engineering team
-How would you handle 100 developers working on the same repository?
-How would you manage hotfixes in production?
-How would you design a CI/CD pipeline using GitHub Actions?
-How do companies manage microservices repositories using GitHub?
