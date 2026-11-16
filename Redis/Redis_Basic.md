@@ -1,4 +1,4 @@
-# Redis Fundamentals
+# 1. Redis Fundamentals
 
 ## 1. What Is Redis?
 
@@ -543,7 +543,7 @@ For example, in our Trading Application, instead of using a large Key, we can us
 
 Redis ek fast in-memory data store hai jo primarily RAM mein data store karta hai. Iska use caching, session management, real-time data handling, rate limiting aur messaging jaise use cases mein hota hai. Redis frequently accessed data ko quickly serve karke application performance improve karne aur Database par repeated requests ka load reduce karne mein help karta hai.
 
-# Redis Data Structures (Very Important)
+# 2. Redis Data Structures (Very Important)
 
 Redis sirf simple Key-Value data store nahi hai. Redis multiple data structures support karta hai, jinki help se hum different types ka data efficiently store, access aur process kar sakte hain.
 
