@@ -1362,391 +1362,1137 @@ Redis provides multiple data structures such as Strings, Lists, Sets, Sorted Set
 
 
 # 3. Caching Concepts
-## 1. What is caching ?
-1. Simple Explanation
--- Socho tumhara favourite question hai maths mein: "2 × 8 = ?"
-❌ Bina Caching ke:
-    - Har baar calculate karo:
-    - 2 × 8 = ?
-    - 2+2+2+2+2+2+2+2 = 16
-    - Har baar time lagta hai! 😓
-✅ Caching ke saath:
-    - Ek baar calculate kiya → Yaad kar liya!
-    - Ab koi bhi poocha "2 × 8?"
-    - "16!" — Turant! ⚡
-    - Dobara calculate nahi kiya!
--- Caching = Ek baar kaam karo Baar baar result yaad rakho!
 
-2. Technical Explanation
--- Caching Kya Hai?
-    - Cache = Temporary Fast Storage
-    - Normal Flow (Without Cache):
-        User Request
-            ↓
+Caching Redis aur backend interviews ka bahut important topic hai. Is chapter mein hum caching ka basic concept, Redis ko cache ke roop mein use karne ke reasons, eviction policies, cache invalidation patterns aur cache stampede ko practical examples ke saath samjhenge.
+
+Examples ko Trading Application aur simple real-life situations se connect kiya gaya hai, taaki concept samajhna aur interview mein explain karna easy ho.
+
+---
+
+## 1. What Is Caching?
+
+### 1.1 Simple Explanation
+
+Socho tumse koi maths ka question poochta hai:
+
+**2 × 8 = ?**
+
+**Without Caching:**
+
+- Har baar calculation karni padegi.
+- 2 × 8 = 16.
+- Same question dobara aaya, toh phir se calculate karna padega.
+
+**With Caching:**
+
+- Ek baar calculation ki aur result yaad rakh liya.
+- Next time same question aaya, toh directly 16 answer kar diya.
+- Dobara calculation karne ki zaroorat nahi padi.
+
+Yahi basic idea caching ka hai:
+
+**Caching = Frequently required result ko fast storage mein temporarily save karna, taaki next time usse quickly access kiya ja sake.**
+
+### 1.2 Technical Explanation
+
+Cache ek fast storage layer hoti hai jahan application frequently accessed data ya expensive operations ke results temporarily store karti hai.
+
+Without Cache:
+
+```text
+       User Request
+             |
+             v
+       Application
+             |
+             v
+          Database
+             |
+             v
+         Response
+```
+
+With Cache:
+
+```text
+       User Request
+             |
+             v
+       Application
+             |
+             v
+         Redis Cache
+             |
+        +----+----+
+        |         |
+        v         v
+     Cache Hit  Cache Miss
+        |         |
+        v         v
+   Return Data  Database
+                  |
+                  v
+             Store in Cache
+                  |
+                  v
+              Response
+```
+
+Cache hit par data cache se mil jata hai. Cache miss par application original data source, jaise Database, se data fetch karti hai. Uske baad application result ko cache mein store kar sakti hai, taaki next request faster ho.
+
+**Note:** Redis aur Database ke response times fixed nahi hote. Actual performance network, data size, server load, query complexity aur infrastructure par depend karti hai. Isliye interview mein "100x faster" ya "90% load reduction" jaise fixed numbers claim nahi karne chahiye jab tak measured benchmark available na ho.
+
+### 1.3 How Does Caching Work?
+
+Suppose user request karta hai:
+
+**"Rahul ki profile dikhao."**
+
+Step-by-step flow:
+
+1. **User Request:** User profile ke liye request bhejta hai.
+2. **Cache Check:** Application Server Redis mein profile check karta hai.
+3. **Cache Hit:** Agar profile Redis mein available hai, toh application directly data return kar deti hai.
+4. **Cache Miss:** Agar profile Redis mein available nahi hai, toh application Database se profile fetch karti hai.
+5. **Cache Store:** Application fetched profile ko Redis mein store kar deti hai, usually TTL ke saath.
+6. **Next Request:** Same profile ki next request par Redis se data mil sakta hai.
+
+### 1.4 Cache Hit vs Cache Miss
+
+| Term | Meaning | Flow |
+|---|---|---|
+| **Cache Hit** | Requested data cache mein available hai | Request → Redis → Data Return |
+| **Cache Miss** | Requested data cache mein available nahi hai | Request → Redis → Database → Cache Store → Response |
+
+**Cache Hit Example:**
+
+```text
+Application → Redis
+                 |
+                 v
+            Data Available
+                 |
+                 v
+            Return Response
+```
+
+**Cache Miss Example:**
+
+```text
+Application → Redis
+                 |
+                 v
+            Data Not Found
+                 |
+                 v
+              Database
+                 |
+                 v
+            Store in Redis
+                 |
+                 v
+            Return Response
+```
+
+### 1.5 What Data Should We Cache?
+
+Common examples:
+
+- Frequently accessed data.
+- Data jo comparatively rarely change hota hai.
+- Expensive Database queries ke results.
+- Product details, configuration aur reference data.
+- User sessions, where appropriate security controls are in place.
+- API responses, when the response is safe to reuse for the same request context.
+
+### 1.6 What Should We Avoid Caching?
+
+- Plain-text passwords. Passwords ko cache karne ke bajay securely hash karke store karna chahiye.
+- Highly sensitive data, unless encryption, access control, TTL and data-handling requirements properly considered hon.
+- Frequently changing data, agar stale value serve karna unacceptable ho.
+- User-specific data ko shared cache key ke under store karna, jab users ke beech data leak hone ka risk ho.
+- Critical financial or transaction state ko cache ko single source of truth maan kar store karna.
+
+**Important:** Frequently changing data ko cache karna automatically wrong nahi hai. Live market data bhi cache kiya ja sakta hai, provided freshness requirements, update frequency aur acceptable staleness clearly defined hon.
+
+### 1.7 What Is Cache TTL?
+
+TTL ka full form hai **Time To Live**.
+
+TTL define karta hai ki Redis mein stored Key kitne time tak available rahegi. Expiry complete hone ke baad Redis Key ko expire kar deta hai.
+
+Example:
+
+```redis
+SET menu "Butter Chicken" EX 3600
+```
+
+Yahan:
+
+- `SET` = Key-Value store karna.
+- `menu` = Redis Key.
+- `Butter Chicken` = Value.
+- `EX 3600` = 3600 seconds, yaani 1 hour ka expiry time.
+
+TTL check karne ke liye:
+
+```redis
+TTL menu
+```
+
+**TTL ke benefits:**
+
+- Old data ko indefinitely cache mein rehne se rokta hai.
+- Cache memory ko manage karne mein help karta hai.
+- Temporary data ko automatically expire kar sakta hai.
+
+**Important:** TTL stale data ka risk reduce karta hai, lekin har situation mein data freshness guarantee nahi karta. Agar Database mein value TTL complete hone se pehle change ho gayi, toh cache invalidation ya refresh strategy bhi chahiye.
+
+### 1.8 Interview Mein Kaise Explain Karein?
+
+Caching is a technique in which we store frequently accessed data in a faster storage layer so that future requests can retrieve it quickly.
+
+For example, in our Trading Application, multiple users may request the NIFTY live price. Instead of fetching the same data from the Database repeatedly, we can keep the latest price in Redis and serve requests from there.
+
+When the data is available in Redis, it is called a Cache Hit. If the data is not available, it is called a Cache Miss. In that case, the application fetches the data from the original source and may store it in Redis for future requests.
+
+Caching helps reduce repeated Database calls, improve response time and handle read traffic more efficiently.
+
+**In Short:** Caching means storing frequently accessed data in fast storage so that repeated requests can be served quickly.
+
+---
+
+## 2. Why Is Redis Commonly Used as a Cache?
+
+### 2.1 Simple Meaning
+
+Redis commonly cache ke roop mein use hota hai because it stores and serves data primarily from RAM, jisse data access fast ho sakta hai.
+
+Redis simple Key-Value caching ke saath multiple data structures, expiry, atomic operations aur different access patterns bhi support karta hai.
+
+### 2.2 Why Do Developers Choose Redis?
+
+1. **Fast Data Access:** Redis primarily memory se data serve karta hai.
+2. **Low-Latency Operations:** Common read/write operations quickly execute ho sakte hain.
+3. **TTL Support:** Keys ke saath expiry set kar sakte hain.
+4. **Multiple Data Structures:** Strings, Hashes, Lists, Sets, Sorted Sets and more.
+5. **Atomic Operations:** `INCR` jaise operations counters ko safely update karne mein useful hote hain.
+6. **Flexible Use Cases:** Caching ke alawa sessions, counters, rate limiting, messaging aur real-time use cases mein bhi use hota hai.
+7. **Persistence Options:** Redis persistence mechanisms bhi provide karta hai, although cache deployments mein data ko disposable maana ja sakta hai depending on the design.
+
+### 2.3 Real-Life Example – Trading Application
+
+Suppose hamari Trading Application mein 10,000 users NIFTY ka latest price request kar rahe hain.
+
+Without Redis:
+
+- Multiple requests Database ya original market-data source tak jayengi.
+- Same data repeatedly fetch karna pad sakta hai.
+- Database aur backend services par additional load aa sakta hai.
+
+With Redis:
+
+- Latest NIFTY price Redis mein maintain kiya ja sakta hai.
+- Application Server Redis se price quickly retrieve kar sakta hai.
+- Repeated Database calls reduce ho sakti hain.
+- Backend services ko other important operations ke liye resources mil sakte hain.
+
+### 2.4 Interview Mein Kaise Explain Karein?
+
+Redis is commonly used as a cache because it stores and serves data primarily from RAM, which provides fast data access.
+
+It also supports TTL, multiple data structures and atomic operations, making it useful for different caching requirements.
+
+For example, in our Trading Application, we can cache frequently requested stock prices in Redis. When multiple users request the same price, the Application Server can serve it from Redis instead of repeatedly querying the Database or another source.
+
+This helps reduce repeated backend calls and improve response time.
+
+**In Short:** Redis is popular for caching because of fast memory-based access, TTL support, data structures and efficient operations.
+
+---
+
+## 3. What Is Cache Eviction?
+
+### 3.1 Simple Explanation
+
+Socho tumhare paas ek small pencil box hai jisme sirf 5 items rakh sakte ho.
+
+Ab pencil box already full hai aur tumhe ek new crayon rakhna hai.
+
+Kya karoge?
+
+- Pehle existing items mein se kisi ek ko remove karoge.
+- Uske baad new crayon rakh paoge.
+
+Redis mein bhi similar situation ho sakti hai.
+
+Jab Redis ki configured memory limit reach ho jati hai aur new data store karne ke liye additional memory chahiye hoti hai, tab configured eviction policy ke according Redis existing Keys remove kar sakta hai.
+
+**Cache Eviction = Memory limit reach hone par policy ke according existing Keys remove karna, taaki new data ke liye memory available ho sake.**
+
+### 3.2 Technical Explanation
+
+Redis server ke liye maximum memory limit configure ki ja sakti hai.
+
+Example:
+
+```text
+Configured Redis Memory = 1 GB
+
+Current Memory Usage = 1 GB
+New data needs more memory
+          |
+          v
+   Maxmemory limit reached
+          |
+          v
+  Check maxmemory-policy
+          |
+          v
+ Evict eligible Key(s), if policy allows
+          |
+          v
+   Try the write operation
+```
+
+Agar configured policy eviction allow nahi karti, toh memory limit exceed karne wali write operation error return kar sakti hai.
+
+**Important:** Eviction ka matlab ye nahi hai ki Redis hamesha sabse purani inserted Key delete karega. Kaunsi Key remove hogi, ye configured eviction policy par depend karta hai.
+
+### 3.3 Interview Mein Kaise Explain Karein?
+
+Cache eviction is the process of removing existing Keys from Redis when the configured memory limit is reached and additional memory is required.
+
+Redis uses a configured eviction policy to decide which Keys can be removed.
+
+For example, in our Trading Application, if Redis reaches its memory limit while storing cached stock prices, Redis may remove eligible cached Keys according to the configured policy.
+
+This helps Redis manage memory within the configured limit.
+
+**In Short:** Cache eviction is the process of removing Keys according to an eviction policy when Redis needs memory for new data.
+
+---
+
+## 4. What Are Redis Eviction Policies?
+
+### 4.1 Simple Meaning
+
+Redis eviction policy decide karti hai ki memory limit reach hone par Redis kaunsi Keys remove karega.
+
+Different applications ki requirements different hoti hain. Kuch applications mein recently used data retain karna important hota hai, kuch mein frequently used data, aur kuch mein expiry wali Keys ko hi evict karna preferred hota hai.
+
+Redis mein commonly used eviction policies ko samajhte hain.
+
+### 4.2 Important Eviction Policies
+
+#### 1. `noeviction` – Do Not Evict Keys
+
+**Policy:** Redis existing Keys ko automatically remove nahi karega.
+
+- Memory limit reach hone ke baad memory require karne wali write commands error return kar sakti hain.
+- Read operations generally continue kar sakti hain.
+- Jab cached data ko automatically evict nahi karna ho, tab consider kiya ja sakta hai.
+
+Example:
+
+```text
+Redis memory limit reached
+          |
+          v
+      New write
+          |
+          v
+   No Key is evicted
+          |
+          v
+    Write may fail
+```
+
+**Use:** Jab automatic eviction nahi chahiye aur application ko write failure handle karna aata ho.
+
+#### 2. `allkeys-lru` – Least Recently Used
+
+**LRU = Least Recently Used**
+
+Policy: Redis all Keys mein se comparatively least recently used Key ko evict karne ki koshish karta hai.
+
+Example:
+
+| Key | Last Access |
+|---|---|
+| Key A | 1 hour ago |
+| Key B | 5 minutes ago |
+| Key C | 1 minute ago |
+
+Key A least recently used hai, isliye woh eviction ke liye better candidate hai.
+
+**Use:** General-purpose caching, jahan recently accessed data ko retain karna useful hota hai.
+
+**Important:** Redis LRU ko approximate algorithm ke through implement karta hai; ise exact timestamp-based perfect LRU samajhna nahi chahiye.
+
+#### 3. `allkeys-lfu` – Least Frequently Used
+
+**LFU = Least Frequently Used**
+
+Policy: Redis all Keys mein se comparatively least frequently accessed Key ko evict karne ki koshish karta hai.
+
+Example:
+
+| Key | Approximate Access Frequency |
+|---|---:|
+| Key A | 2 times |
+| Key B | 50 times |
+| Key C | 30 times |
+
+Key A least frequently used hai, isliye woh eviction candidate ho sakti hai.
+
+**Use:** Jab frequently accessed, popular data ko cache mein retain karna useful ho.
+
+#### 4. `allkeys-random` – Random Eviction
+
+**Policy:** Redis all Keys mein se randomly Key select karke evict karta hai.
+
+- Recently used ya frequently used hone ka special preference nahi hota.
+- Selection random hota hai.
+
+**Use:** Jab eviction ke liye access pattern important na ho.
+
+#### 5. `volatile-lru` – LRU Among Keys With TTL
+
+**Policy:** Sirf un Keys mein se LRU basis par eviction hoti hai jin par expiry/TTL set hai.
+
+Example:
+
+| Key | TTL | Last Access |
+|---|---|---|
+| Key A | Yes | 1 hour ago |
+| Key B | Yes | 1 minute ago |
+| Key C | No | Not applicable |
+
+Key A eligible Keys mein least recently used hai, isliye woh eviction candidate ho sakti hai. Key C par TTL nahi hai, isliye `volatile-lru` ke under woh eligible nahi hai.
+
+**Use:** Jab application permanent/no-expiry Keys ko eviction se protect karna chahti ho aur TTL wali Keys ko evict karna acceptable ho.
+
+#### 6. `volatile-lfu` – LFU Among Keys With TTL
+
+**Policy:** Sirf TTL wali Keys mein se least frequently used Key ko evict karne ki koshish karta hai.
+
+**Use:** Jab no-expiry Keys ko protect karna ho aur expiry wali Keys mein popular data retain karna ho.
+
+#### 7. `volatile-random` – Random Among Keys With TTL
+
+**Policy:** Sirf TTL wali Keys mein se randomly ek Key evict hoti hai.
+
+**Use:** Jab sirf expiry wali Keys eviction ke liye eligible hon aur random selection acceptable ho.
+
+#### 8. `volatile-ttl` – Shortest Remaining TTL
+
+**Policy:** TTL wali Keys mein se jis Key ka remaining TTL sabse kam hai, Redis usse eviction ke liye prefer karta hai.
+
+Example:
+
+| Key | Remaining TTL |
+|---|---|
+| Key A | 10 seconds |
+| Key B | 1 hour |
+| Key C | 1 day |
+
+Key A sabse pehle expire hone wali hai, isliye woh eviction candidate hogi.
+
+**Use:** Jab jaldi expire hone wali cached Keys ko pehle remove karna useful ho.
+
+### 4.3 Quick Comparison
+
+| Policy | Which Keys Can Be Evicted? | Selection Logic |
+|---|---|---|
+| `noeviction` | None | Write may fail when memory limit is reached |
+| `allkeys-lru` | All Keys | Least Recently Used |
+| `allkeys-lfu` | All Keys | Least Frequently Used |
+| `allkeys-random` | All Keys | Random |
+| `volatile-lru` | Keys with TTL | Least Recently Used |
+| `volatile-lfu` | Keys with TTL | Least Frequently Used |
+| `volatile-random` | Keys with TTL | Random |
+| `volatile-ttl` | Keys with TTL | Shortest remaining TTL |
+
+### 4.4 Important Difference – Allkeys vs Volatile
+
+- **Allkeys policies:** Redis all Keys ko eviction candidates bana sakta hai.
+- **Volatile policies:** Redis sirf un Keys ko eviction candidates banata hai jin par TTL set hai.
+- **Noeviction:** Redis automatically koi Key evict nahi karta.
+
+Agar `volatile-*` policy use ho rahi hai aur koi eligible TTL wali Key available nahi hai, toh memory limit ke baad write operation fail ho sakti hai.
+
+### 4.5 How to Configure Eviction Policy?
+
+Redis configuration mein `maxmemory-policy` set ki ja sakti hai.
+
+Example:
+
+```redis
+maxmemory 1gb
+maxmemory-policy allkeys-lru
+```
+
+Redis CLI se current settings check karne ke liye:
+
+```redis
+CONFIG GET maxmemory
+CONFIG GET maxmemory-policy
+```
+
+**Note:** Exact configuration permissions aur deployment environment par depend kar sakti hain.
+
+### 4.6 Interview Mein Kaise Explain Karein?
+
+Redis eviction policies decide karti hain ki configured memory limit reach hone par Redis kaunsi Keys remove karega.
+
+For example, `allkeys-lru` least recently used Keys ko evict karta hai, while `allkeys-lfu` least frequently used Keys ko evict karta hai.
+
+Similarly, `volatile-lru` aur `volatile-lfu` sirf TTL wali Keys ke beech selection karte hain. `noeviction` policy mein Redis Keys automatically remove nahi karta, aur memory limit ke baad write operations fail ho sakti hain.
+
+For a general-purpose cache, `allkeys-lru` ya `allkeys-lfu` consider kar sakte hain, depending on the access pattern.
+
+**In Short:** Eviction policy defines which Redis Keys can be removed when the configured memory limit is reached.
+
+---
+
+## 5. What Is Cache Invalidation?
+
+### 5.1 Simple Explanation
+
+Socho subah mummy ne tumhare tiffin mein Aloo Paratha rakha.
+
+Tumhe yaad hai ki aaj tiffin mein Aloo Paratha hai.
+
+Lekin baad mein mummy ne tiffin change karke Paneer Sandwich rakh diya.
+
+Ab tumhare paas purani information hai, lekin actual tiffin mein new food hai.
+
+Yahan tumhari purani memory outdated ho gayi.
+
+Caching mein bhi similar problem hoti hai.
+
+**Cache Invalidation = Jab original data change ho, toh usse related old cache ko delete ya update karna, taaki application stale data serve na kare.**
+
+### 5.2 Technical Explanation
+
+Suppose Database mein Rahul ki salary update ho gayi:
+
+```text
+Database:
+Rahul Salary = 50,000  (Updated)
+
+Redis Cache:
+Rahul Salary = 40,000  (Old Value)
+```
+
+Agar application Redis se old salary read karegi, toh user ko incorrect data milega.
+
+Is problem ko stale cache kehte hain.
+
+Solution:
+
+- Old cache Key delete karo, ya
+- Cache mein updated value write karo.
+
+### 5.3 Cache Invalidation Flow
+
+```text
+       Database Data Updated
+                 |
+                 v
+        Related Cache Key
+          is now stale
+                 |
+                 v
+       +---------+---------+
+       |                   |
+       v                   v
+   Delete Cache       Update Cache
+       |                   |
+       v                   v
+  Next Read Gets      Next Read Gets
+   Fresh Data          Updated Data
+```
+
+### 5.4 Common Cache Invalidation Approaches
+
+1. **Delete/Invalidate:** Database update ke baad related cache Key delete karna.
+2. **Update:** Database update ke baad cache value ko bhi update karna.
+3. **TTL-Based Expiration:** Cache Key ko limited time ke liye store karna, taaki old value indefinitely available na rahe.
+4. **Event-Based Invalidation:** Data update hone par event publish karke related cache entries invalidate karna.
+
+### 5.5 Interview Mein Kaise Explain Karein?
+
+Cache invalidation is the process of removing or updating cached data when the original data changes.
+
+For example, in our Trading Application, suppose a user's profile or account information is updated in the Database, but Redis still contains the old value.
+
+If the application reads that old value, it may return stale data.
+
+To avoid this, we can delete the old cache Key or update the cache with the latest value after the Database update.
+
+**In Short:** Cache invalidation ensures that outdated cached data is removed or refreshed when the original data changes.
+
+---
+
+## 6. What Is the Cache-Aside Pattern?
+
+### 6.1 Simple Meaning
+
+Cache-Aside ek commonly used caching pattern hai jahan **Application khud Cache aur Database dono manage karti hai**.
+
+Application pehle Cache check karti hai. Agar data nahi milta, toh Database se fetch karke Cache mein store kar deti hai.
+
+Is pattern ko Lazy Loading bhi kaha jata hai, because data cache mein tab load hota hai jab uski request aati hai.
+
+### 6.2 Read Flow
+
+Suppose user Rahul ki profile request karta hai.
+
+```text
+          User Request
+                |
+                v
+        Application Server
+                |
+                v
+           Check Redis
+                |
+          +-----+-----+
+          |           |
+          v           v
+       Cache Hit   Cache Miss
+          |           |
+          v           v
+      Return Data   Fetch from DB
+                      |
+                      v
+                 Store in Redis
+                      |
+                      v
+                  Return Data
+```
+
+Step-by-step:
+
+1. User request karta hai.
+2. Application Redis mein data check karti hai.
+3. Cache Hit hone par directly response return hota hai.
+4. Cache Miss hone par Database se data fetch hota hai.
+5. Application fetched data Redis mein store karti hai.
+6. User ko response return hota hai.
+
+### 6.3 Write/Update Flow
+
+Cache-Aside mein common write strategy hai:
+
+1. Database mein data update karo.
+2. Related cache Key delete/invalidate karo.
+3. Next read par Cache Miss hoga.
+4. Application Database se latest data fetch karegi.
+5. Fresh data Redis mein store ho jayega.
+
+```text
+       Update Request
+              |
+              v
+       Update Database
+              |
+              v
+       Delete Cache Key
+              |
+              v
+       Next Read Request
+              |
+              v
+          Cache Miss
+              |
+              v
+       Fetch Latest Data
+              |
+              v
+        Store in Redis
+              |
+              v
+         Return Data
+```
+
+### 6.4 Redis Commands Example
+
+Read ke time:
+
+```redis
+GET USER:1001
+```
+
+Agar Key missing hai, application Database se data fetch karegi aur phir cache karegi:
+
+```redis
+SET USER:1001 "Amit" EX 3600
+```
+
+Database update ke baad invalidation:
+
+```redis
+DEL USER:1001
+```
+
+### 6.5 Advantages and Disadvantages
+
+**Advantages:**
+
+- Implement karna relatively simple hai.
+- Sirf requested data cache mein load hota hai.
+- Cache miss hone par Database se fresh data fetch kiya ja sakta hai.
+- TTL ke saath combine kar sakte hain.
+
+**Disadvantages:**
+
+- First request par Cache Miss ho sakta hai.
+- Database update aur cache invalidation ke beech short inconsistency window ho sakti hai.
+- Multiple application instances ke saath invalidation coordination important ho sakta hai.
+
+### 6.6 Interview Mein Kaise Explain Karein?
+
+Cache-Aside is a caching pattern in which the application manages both the Cache and the Database.
+
+Whenever a read request comes, the application first checks Redis. If the data is available, it returns the cached value. If the data is missing, the application fetches it from the Database, stores it in Redis and then returns the response.
+
+For write operations, a common approach is to update the Database first and then invalidate the related cache Key. The next read request loads the latest data into Redis.
+
+**In Short:** In Cache-Aside, the application checks the Cache first, fetches from the Database on a Cache Miss and manages cache invalidation after updates.
+
+---
+
+## 7. What Is Write-Through Caching?
+
+### 7.1 Simple Meaning
+
+Write-Through Caching ek pattern hai jahan write operation ke time Cache aur Database dono ko update kiya jata hai.
+
+Iska goal ye hota hai ki application ke read path par cache mein latest written data available rahe.
+
+Simple words mein:
+
+**Data update hua → Cache aur Database dono update karo.**
+
+### 7.2 Technical Flow
+
+Conceptual flow:
+
+```text
+         Write Request
+               |
+               v
         Application
-            ↓
-        💾 Database (Slow!) → 100ms
-            ↓
-        Response
-    - Cached Flow (With Cache):
-        User Request
-            ↓
-        Application
-            ↓
-        🧠 Redis Cache (Fast!) → 1ms
-            ↓
-        Response
-    - Result = 100x Faster! ⚡
--- How Caching Works 
-    - Step 1: User ne request kiya
-        "Rahul ki profile dikhao"
-    - Step 2: Cache check karo (Cache Hit/Miss)
-        - Cache main hai? -> Cache Hit -> Turant Do
-        - Cache main nai? -> Cache Miss -> Database se lao.
-    - Step 3: Cache Miss hone pe 
-        Database se data laya
-            ↓
-        Redis mein save kiya (Cache Store)
-            ↓
-        User ko diya
-    - Step 4: Next time same request
-        - Redis mein hai! -> Cache HIT
-        -> Database touch nahi kiya!
--- Cache Hit vs Cache Miss
-    - Cache HIT : 
-        Request → Redis → Data mila! ✅
-        Fast, No DB call, Happy! 😎
-    - Cache MISS : 
-        Request → Redis → Nahi mila!
-        → Database → Data laya
-        → Redis mein save kiya
-        → Response diya
-        Slow, DB call hua, but next time fast! ✅
+               |
+               v
+       Write-Through Layer
+               |
+          +----+----+
+          |         |
+          v         v
+       Redis     Database
+          |         |
+          v         v
+       Updated   Updated
+        Cache     Record
+```
 
-3. Important Interview Points
-✅ Cache = Fast temporary storage
-✅ Cache HIT = Data mila Redis mein ✅
-✅ Cache MISS = Data nahi mila, DB se laya ❌
-✅ Cache reduces DB load by ~90%!
-✅ Cache reduces response time 100x!
--- What is Cache 
-    ✅ Frequently accessed data
-    ✅ Data jo rarely change hota hai
-    ✅ Expensive DB queries ka result
-    ✅ User sessions
-    ✅ API responses
--- What NOT to Cache?
-    ❌ Highly sensitive data (passwords)
-    ❌ Data jo har second change hota hai
-    ❌ User specific real-time data
--- Cache TTL (Expiry):
-    Hamesha TTL set karo!
-    → Stale data problem avoid hoti hai
-    → Memory free rehti hai
-    SET menu "Butter Chicken" EX 3600
-    → 1 hour baad automatically delete! ✅
+Implementation mein write order aur acknowledgement behaviour system ke design par depend karta hai. Important requirement ye hai ki write-through layer cache aur persistent store ko coordinated manner mein update kare.
 
-## 2. Why is Redis Commonly used as a Cache?
-✅ Cache = Fast temporary storage
-✅ Cache reduces DB load by ~90%!
-✅ Cache reduces response time 100x!
+### 7.3 Real-Life Example – Trading Application
 
-## 3. What is Cache eviction ?
-1. Simple Explanation 
--- Socho tumhare paas ek small pencil box hai! ✏️
-Pencil box mein sirf 5 cheezein aa sakti hain:
-┌─────────────────────────────┐
-│ Pencil │ Pen │ Eraser │ Scale│ Sharpner│
-└─────────────────────────────┘
-        → BOX FULL! 😱
--- Ab tumhe Crayon rakhna hai — lekin box full hai!
--- Kya karoge? 🤔
-    → Koi ek cheez NIKALNI padegi!
-    → Tab nai cheez andar aayegi!
--- Yahi Cache Eviction hai! Redis ka memory full ho gayi → Purani cheez hataao → Nai cheez daalo! 🎯
+Suppose user apni profile ka city update karta hai:
 
-2. Technical Explanation
--- Redis ki memory LIMITED hai! (Jitni RAM — utni hi memory)
--- Jab memory full ho jaaye:
-    Naya data aaya → Kahan rakhen? 😱
-    ↓
-    Purana data EVICT karo (hatao)
-    ↓
-    Naya data rakho! ✅
--- Ye process = Cache Eviction!
+Old Value:
 
-## 4. What are Redis eviction Policies?
--- Total 6 Policies
-1. NOEVICTION(Default)
--- Policy: Kuch mat hatao!
--- Memory full + Naya data aaya
--- ❌ ERROR de do! "OOM command not allowed"
--- Use : Jab data loss bilkul nahi chahiye
-⚠️ Warning: Application crash ho sakti hai!
+```text
+City = Jammu
+```
 
-2. ALLKEYS-LRU ⭐ Most Popular!
--- Policy: Sabse pehle PURANA hatao!
--- LRU = Least Recently Used
--- Jo key sabse pehle use hui thi
-    → Wo pehle hataao!
--- Example : 
-    Key A → Last used: 1 hour ago   ← EVICT! 🗑️
-    Key B → Last used: 5 mins ago
-    Key C → Last used: 1 min ago
--- Sabse purani = Key A -> Bye Bye
--- Use : General caching ke liye best! ✅
+New Value:
 
-3. ALLKEYS-LFU
--- Policy: Sabse KAM use hone wala hatao!
--- LFU = Least Frequently Used
--- Jo key sabse kam use hui 
-    -> Wo pehle hataao!
--- Example 
-    Key A → Used: 2 times    ← EVICT! 🗑️
-    Key B → Used: 50 times
-    Key C → Used: 30 times
--- Sabse kam use = Key A → Bye bye! 👋
--- Use: Popular data retain karna ho!
+```text
+City = Delhi
+```
 
-4. ALLKKEYS-RANDOM
--- Policy: Random koi bhi hatao!
--- Memory full → Koi bhi random key delete karo!
--- Use: Jab koi pattern matter na kare
-⚠️ Warning: Important data bhi ja sakta hai!
+Write-through approach mein update operation ke through Redis aur Database dono mein latest city maintain ki jayegi.
 
-5. VOLATILE-LRU
--- Policy: Sirf EXPIRY wali keys mein se purani hatao!
--- TTL wali keys → LRU se hatao
--- No TTL wali keys → Safe! ✅
--- Example : 
-    Key A (TTL: yes) → Last used: 1hr ← EVICT! 🗑️
-    Key B (TTL: yes) → Last used: 1min
-    Key C (TTL: no)  → SAFE! ✅
--- Use : Permanent data bachana ho! ✅
+Next time application profile read karegi, toh Redis se updated value mil sakti hai.
 
-6. VOLATILE-TTL
--- Policy : Sabse jaldi expire hone wali
-        key pehle hatao!
--- Jo key sabse jaldi expire hogi
-    → Use pehle hataao!
--- Example : 
-    Key A → TTL: 10 seconds  ← EVICT! 🗑️
-    Key B → TTL: 1 hour
-    Key C → TTL: 1 day
--- Sabse jaldi expire = Key A → Bye bye! 👋
+### 7.4 Advantages
 
-## 5. What is cache invalidation?
-1. Simple Explanation
--- Socho tumhari mummy ne subah tiffin pack kiya:
-    Subah 8 AM:
-    Tiffin mein → "Aloo Paratha" ✅
-    Tumhe yaad hai → "Aaj Aloo Paratha hai!" 😋
--- Lekin tumhari mummy ne baad mein change kar diya:
-    Subah 9 AM:
-    Mummy ne tiffin badal diya → "Paneer Sandwich" 🥪
-    Lekin tumhe abhi bhi lagta hai → "Aloo Paratha hai!" 😐
--- Problem : Tumhari purani yaad (cache) GALAT hai! Naya tiffin alag hai — purani info outdated!
--- Cache Invalidation = Purani galat yaad hatao Nai sahi info rakho! 🎯
+- Write ke baad cache mein latest value available ho sakti hai.
+- Frequently read aur updated data ke liye useful.
+- Cache ko read path par warm rakhne mein help karta hai.
 
-2. Techincal Explnantion
--- Cache Invalidation Kya Hai?
-    Jab Database mein data change ho —
-    Cache mein purana (stale) data hota hai!
+### 7.5 Disadvantages
 
-    Problem:
-    ─────────────────────────────
-    Database → Rahul ki salary = 50,000 ✅ (Updated)
-    Cache    → Rahul ki salary = 40,000 ❌ (Old!)
+- Write operation mein Cache aur Database dono update karne padte hain.
+- Write latency increase ho sakti hai.
+- Agar ek store update ho aur doosra fail ho jaye, toh inconsistency handle karni padti hai.
+- Har written item ko cache karne se unnecessary cache entries create ho sakti hain.
 
-    User cache se padh raha hai → GALAT DATA! 😱
+### 7.6 Interview Mein Kaise Explain Karein?
 
-    Solution = Cache Invalidation!
-    → Purana cache hatao ya update karo! ✅
+Write-Through Caching is a pattern in which the Cache and the Database are updated as part of the same write workflow.
 
-## 6. What is Cache aside pattern?
--- CACHE ASIDE (Most Popular!)
+For example, in our Trading Application, when a user's profile is updated, the write-through layer updates the persistent Database and the Redis cache so that subsequent reads can get the updated value from the Cache.
+
+The main advantage is that recently written data can be available in the Cache. However, write operations may become slower because both storage layers need to be updated, and failure handling is important.
+
+**In Short:** Write-Through means updating the Cache and the Database together as part of the write workflow.
+
+---
+
+## 8. What Is TTL-Based Invalidation?
+
+### 8.1 Simple Meaning
+
+TTL-Based Invalidation mein hum Redis Key ke saath expiry time set kar dete hain.
+
+Expiry time complete hone ke baad Redis us Key ko expire kar deta hai.
+
+Simple words mein:
+
+**Cache mein data store karo + Expiry set karo = Data limited time tak available rahega.**
+
+### 8.2 Technical Flow
+
+Suppose hum user profile ko 1 hour ke liye cache karna chahte hain.
+
+```redis
+SET USER:1001 "Amit" EX 3600
+```
+
 Flow:
-─────────────────────────────
-READ:
-User → Cache check karo
-         ↓
-    Cache HIT? → Data do ✅
-         ↓
-    Cache MISS? → DB se lao
-               → Cache mein save karo
-               → Data do ✅
 
-WRITE/UPDATE:
-Data change hua DB mein
-    ↓
-Cache DELETE karo! 🗑️
-    ↓
-Next request → Cache MISS
-            → DB se fresh data lega
-            → Cache update ho jayega ✅
+```text
+        Store Data in Redis
+                |
+                v
+          Set TTL = 1 Hour
+                |
+                v
+        Key Available in Cache
+                |
+                v
+          TTL Completes
+                |
+                v
+          Key Expires
+                |
+                v
+       Next Request = Cache Miss
+                |
+                v
+        Fetch Fresh Data
+        from Original Source
+```
 
-Simple Rule:
-"Data change hua = Cache delete karo!"
+### 8.3 Advantages
 
-## 7. What is Write-through caching?
-Flow:
-─────────────────────────────
-Data update hua?
-    ↓
-PEHLE Cache update karo ✅
-    ↓
-PHIR Database update karo ✅
+- Implement karna simple hai.
+- Expired data ko indefinitely cache mein rehne se rokta hai.
+- Temporary data automatically expire ho sakta hai.
+- Cache memory management mein help karta hai.
 
-Dono hamesha sync mein! 🔄
+### 8.4 Disadvantages
 
-Advantage:
-→ Cache hamesha fresh! ✅
-→ Stale data kabhi nahi! ✅
+- TTL expire hone tak old data serve ho sakta hai.
+- Data update hote hi cache automatically fresh nahi hota, unless separately invalidated.
+- Bahut saari Keys ka same time expire hona Cache Stampede create kar sakta hai.
 
-Disadvantage:
-→ Har write pe double kaam 😓
-→ Thoda slow writes
+### 8.5 Interview Mein Kaise Explain Karein?
 
-## 8. What is TTL BASED INVALIDATION?
-Flow:
-─────────────────────────────
-Cache mein data rakho + Expiry lagao!
+TTL-Based Invalidation is a technique in which we assign an expiry time to a Redis Key.
 
-SET user:1 "Rahul" EX 3600
-              ↑
-         1 hour baad auto delete!
+Once the TTL expires, Redis expires the Key, and the next request may result in a Cache Miss. The application can then fetch the latest data from the original source and cache it again.
 
-1 hour baad:
-→ Cache automatically delete! 🗑️
-→ Next request → Fresh DB se lega ✅
+For example, in our Trading Application, we can cache some reference data for a fixed duration using Redis TTL.
 
-Simple Rule:
-"Cache apne aap expire ho jaayega!"
+The main advantage is simplicity, but the limitation is that old data may remain in the Cache until its TTL expires unless we invalidate it earlier.
 
-Advantage:
-→ Bahut simple! ✅
-→ Koi extra code nahi!
+**In Short:** TTL-Based Invalidation automatically expires cached data after a configured time.
 
-Disadvantage:
-→ 1 ghante tak purana data aa sakta hai! ⚠️
+---
 
-## 9. What is Cache stampede?
-1. Simple Explanation
--- Socho ek popular ice cream shop hai! 🍦
-    Subah 10 AM:
-    Shop khuli → Bahut saare bacche line mein! 😄
-    "Chocolate ice cream do!"
-    "Chocolate ice cream do!"
-    "Chocolate ice cream do!"
--- Lekin chocolate ice cream khatam ho gayi! 
-        Ab kya hua?
-    ──────────────────────────────
-    1000 bacche ek saath chef ke paas gaye!
-    "Chocolate banao! Chocolate banao!"
+## 9. What Is Cache Stampede?
 
-    Chef akela hai! 😵
-    1000 bacche ek saath chilla rahe hain!
-    Chef overwhelmed → Shop band ho gayi! 💥
--- Yahi Cache Stampede hai! Cache expire hua → Sab ek saath DB pe gaye → DB crash!
+### 9.1 Simple Explanation
 
-2. Technical Explanation
--- Cache Stampede Kya Hai?
--- Normal Flow:
-    ─────────────────────────────
-    1000 users → Redis Cache → Instant! ⚡
-                (Cache HIT)
+Socho ek popular ice cream shop hai jahan Chocolate Ice Cream bahut popular hai.
 
-    Stampede Flow:
-    ─────────────────────────────
-    Cache EXPIRE ho gayi! ⏰
-        ↓
-    1000 users ek saath aaye
-        ↓
-    1000 Cache MISS! ❌
-        ↓
-    1000 DB queries ek saath! 😱
-        ↓
-    💥 DATABASE CRASH!
--- TimeLine : 
-    ─────────────────────────────
-    9:00 AM → Cache set hua ✅
-    9:01 AM → 1000 users → Cache HIT ⚡
-    9:02 AM → Cache EXPIRE! ⏰
-    9:02 AM → 1000 users → Cache MISS ❌
-    9:02 AM → 1000 DB hits → 💥 CRASH!
+Shop mein Chocolate Ice Cream ka stock khatam ho gaya.
 
-## 10. How Do you prevent cache stampede?
--- 3 Solutions:
-1. MUTEX LOCK(Locking Soluction)
-    Idea:
-    ─────────────────────────────
-    Sirf EK request DB se data laye!
-    Baaki sab WAIT karen!
+Ab 1,000 customers ek saath Chocolate Ice Cream order karne aa gaye.
 
-    Flow:
-    ─────────────────────────────
-    Cache Miss hua
-        ↓
-    Pehli request → Lock lelo! 🔒
-                → DB se data lao
-                → Cache update karo
-                → Lock chodo! 🔓
+Shop ko suddenly 1,000 requests handle karni pad rahi hain. Agar shop ka system itni requests handle nahi kar paya, toh service slow ya unavailable ho sakti hai.
 
-    Baaki 999 requests → Lock dekha
-                    → Wait karo ⏳
-                    → Cache update hone do
-                    → Cache se lelo! ✅
+Caching mein bhi similar problem hoti hai.
 
-    Result:
-    → Sirf 1 DB query! ✅
-    → 999 requests cache se! ✅
-    → No crash! 😎
+**Cache Stampede = Jab popular cache entry expire ya unavailable ho jati hai aur bahut saari requests ek saath Cache Miss ke through Database ko hit karne lagti hain.**
 
-2. EARLY EXPIRATION (Smart Expiry)
-    Idea:
-    ─────────────────────────────
-    Expiry se PEHLE hi cache refresh karo!
-    Expire hone ka wait mat karo!
+### 9.2 Technical Explanation
 
-    Flow:
-    ─────────────────────────────
-    Cache TTL = 60 minutes set kiya
+Normal Flow:
 
-    55 minutes pe:
-    → "Expiry aane wali hai!"
-    → Background mein cache refresh karo ✅
-    → Users ko pata bhi nahi chala! 😎
+```text
+        1,000 Users
+              |
+              v
+          Redis Cache
+              |
+              v
+           Cache Hit
+              |
+              v
+       Fast Response
+```
 
-    60 minutes pe:
-    → Cache already fresh hai! ✅
-    → Koi stampede nahi! ✅
+Cache Stampede Flow:
 
-    Jaise:
-    ─────────────────────────────
-    Ghar mein gas khatam hone se
-    PEHLE hi cylinder mangwa lo!
-    Khatam hone ka wait mat karo! 🎯
+```text
+        1,000 Users
+              |
+              v
+       Popular Cache Key
+             Expires
+              |
+              v
+        1,000 Cache Misses
+              |
+              v
+       1,000 DB Requests
+              |
+              v
+       Database Overloaded
+```
 
-3. PROBABILISTIC EARLY EXPIRATION
-    Idea:
-    ─────────────────────────────
-    Randomly kuch requests pehle
-    hi cache refresh kar deti hain!
+### 9.3 Real-Life Example – Trading Application
 
-    Flow:
-    ─────────────────────────────
-    TTL check karo
-        ↓
-    "Kya mujhe abhi refresh karna chahiye?"
-        ↓
-    Random chance → Haan! → Refresh karo ✅
-    Random chance → Nahi! → Cache use karo ✅
+Suppose hamari Trading Application mein NIFTY ka latest market summary Redis mein cached hai.
 
-    Result:
-    → Gradually refresh hota hai
-    → Ek saath sab nahi jaate DB pe! ✅
+Bahut saare users same summary request kar rahe hain.
 
+- Jab cache available hai, requests Redis se serve ho rahi hain.
+- Suddenly cache Key expire ho gayi.
+- Thousands of users ek saath same data request karte hain.
+- Multiple Application Server instances Database ya original service ko same query bhej sakte hain.
+- Backend par sudden load increase ho sakta hai.
 
+Is situation ko Cache Stampede kehte hain.
+
+### 9.4 Why Is Cache Stampede Dangerous?
+
+- Database par sudden heavy load aa sakta hai.
+- Response time increase ho sakta hai.
+- Database connection pool exhaust ho sakta hai.
+- Application slow ya temporarily unavailable ho sakti hai.
+- Other requests bhi affect ho sakti hain.
+
+### 9.5 Interview Mein Kaise Explain Karein?
+
+Cache Stampede is a situation where a popular cached item expires or becomes unavailable, causing many requests to miss the Cache at nearly the same time.
+
+All these requests may try to fetch the same data from the Database simultaneously.
+
+For example, in our Trading Application, if a popular NIFTY market summary expires while thousands of users are requesting it, multiple requests may hit the Database together and overload it.
+
+**In Short:** Cache Stampede happens when many requests simultaneously miss the same cache entry and create a sudden load on the Database.
+
+---
+
+## 10. How Do You Prevent Cache Stampede?
+
+Cache Stampede ko prevent karne ke liye hum different techniques use kar sakte hain.
+
+Is chapter mein 3 important approaches samajhte hain.
+
+### 10.1 Solution 1 – Mutex Lock / Distributed Lock
+
+**Simple Meaning:**
+
+Jab Cache Miss hota hai, toh hum allow karte hain ki sirf ek request Database se data fetch kare.
+
+Baaki requests wait kar sakti hain ya short delay ke baad Cache dobara check kar sakti hain.
+
+**Flow:**
+
+```text
+          Cache Miss
+               |
+               v
+       First Request Gets Lock
+               |
+               v
+        Fetch Data from DB
+               |
+               v
+         Update Redis Cache
+               |
+               v
+           Release Lock
+               |
+               v
+       Other Requests Read
+          Updated Cache
+```
+
+**Example:**
+
+Suppose 1,000 users same data request kar rahe hain.
+
+- First request lock acquire karti hai.
+- First request Database se data fetch karti hai.
+- Redis mein cache update karti hai.
+- Lock release karti hai.
+- Other requests updated cache se data read karti hain.
+
+**Benefits:**
+
+- Same data ke liye duplicate Database calls reduce hoti hain.
+- Database par sudden load control karne mein help milti hai.
+
+**Important:** Distributed environment mein lock ko safely implement karna zaroori hai. Lock expiry, owner verification, timeout aur failure scenarios handle karne chahiye. Lock lene mein fail hui requests ko uncontrolled way mein Database hit nahi karna chahiye.
+
+### 10.2 Solution 2 – Early Expiration / Background Refresh
+
+**Simple Meaning:**
+
+Cache expire hone ka wait karne ke bajay, expiry se pehle hi background mein data refresh kar do.
+
+Example:
+
+Suppose Cache TTL 60 minutes ka hai.
+
+- 55 minutes ke around background refresh trigger kar sakte hain.
+- Latest data original source se fetch karo.
+- Redis mein cache update kar do.
+- Users ko fresh cache milta rahega.
+
+**Flow:**
+
+```text
+         Cache TTL = 60 Minutes
+                   |
+                   v
+         At Around 55 Minutes
+                   |
+                   v
+         Background Refresh
+                   |
+                   v
+         Fetch Latest Data
+                   |
+                   v
+          Update Redis Cache
+                   |
+                   v
+        Cache Remains Available
+```
+
+**Real-Life Example:**
+
+Jaise ghar mein gas cylinder khatam hone ka wait nahi karte. Cylinder khatam hone se pehle hi new cylinder arrange kar lete hain.
+
+**Benefits:**
+
+- Popular data expiry se pehle refresh ho sakta hai.
+- Sudden Cache Miss ka chance reduce hota hai.
+- User ko fresh data milne ki possibility improve hoti hai.
+
+**Important:** Background refresh ko coordinate karna chahiye, warna multiple application instances same cache ko simultaneously refresh kar sakte hain.
+
+### 10.3 Solution 3 – Probabilistic Early Expiration
+
+**Simple Meaning:**
+
+Is technique mein application kuch requests ko randomly ya probability-based decision ke through cache expiry se pehle refresh karne ke liye select karti hai.
+
+Har request ko refresh karne ki zaroorat nahi hoti.
+
+**Flow:**
+
+```text
+          Request Arrives
+                 |
+                 v
+         Check Cache TTL
+                 |
+                 v
+       Probability Decision
+                 |
+          +------+------+
+          |             |
+          v             v
+      Refresh Now    Use Cache
+          |             |
+          v             v
+    Fetch Fresh Data  Return Data
+          |
+          v
+      Update Cache
+```
+
+**Example:**
+
+Suppose kisi popular Key ki expiry close aa rahi hai.
+
+- Kuch requests refresh trigger kar sakti hain.
+- Baaki requests existing cached value use kar sakti hain.
+- Refresh logic ke through new value expiry se pehle available ho sakti hai.
+
+**Benefits:**
+
+- Refresh load time ke across spread ho sakta hai.
+- Sab requests ke ek saath Database hit karne ka risk reduce hota hai.
+- Popular cache entries ko proactively refresh karne mein help milti hai.
+
+**Important:** Probabilistic refresh ka exact algorithm application design par depend karta hai. Critical use cases mein ise locking ya background refresh ke saath combine kiya ja sakta hai.
+
+### 10.4 Quick Comparison
+
+| Technique | Main Idea | Best Fit |
+|---|---|---|
+| Mutex / Distributed Lock | Ek request refresh kare, others wait or recheck | Same Key par simultaneous Cache Miss |
+| Early Expiration | Expiry se pehle background refresh | Predictable, popular cache entries |
+| Probabilistic Early Expiration | Probability ke basis par refresh trigger karna | High-traffic cache entries ko gradually refresh karna |
+
+### 10.5 Interview Mein Kaise Explain Karein?
+
+We can prevent Cache Stampede using techniques like distributed locking, early refresh and probabilistic early expiration.
+
+With a distributed lock, only one request fetches the missing data from the Database, while other requests wait or retry the Cache.
+
+With early refresh, we refresh popular cache entries before their TTL expires.
+
+With probabilistic early expiration, selected requests trigger refresh based on a probability-based decision, helping spread refresh work over time.
+
+**In Short:** Cache Stampede can be reduced by coordinating cache refreshes so that multiple requests do not fetch the same missing data from the Database simultaneously.
+
+---
+
+# Quick Revision – Caching Concepts
+
+| No. | Interview Question | Key Point |
+|---:|---|---|
+| 1 | What Is Caching? | Frequently accessed data ko fast storage mein temporarily store karna |
+| 2 | Why Is Redis Used as a Cache? | Fast memory access, TTL and multiple data structures |
+| 3 | What Is Cache Eviction? | Memory limit par policy ke according Keys remove karna |
+| 4 | Redis Eviction Policies | LRU, LFU, Random, TTL and Noeviction policies |
+| 5 | What Is Cache Invalidation? | Old cache ko delete ya update karna |
+| 6 | What Is Cache-Aside? | Application Cache check karti hai, miss par DB se fetch karti hai |
+| 7 | What Is Write-Through? | Write workflow mein Cache aur Database dono update karna |
+| 8 | What Is TTL-Based Invalidation? | Expiry time ke baad Key expire karna |
+| 9 | What Is Cache Stampede? | Same cache miss par bahut saari requests ka DB hit karna |
+| 10 | How to Prevent Cache Stampede? | Locking, early refresh and probabilistic refresh |
+
+## One-Line Interview Summary
+
+Caching ek technique hai jisme frequently accessed data ko fast storage, jaise Redis, mein temporarily store kiya jata hai, taaki repeated requests ko quickly serve kiya ja sake. Redis caching mein TTL, eviction policies aur different invalidation patterns help karte hain. Cache Stampede jaise problems ko distributed locking aur early refresh techniques se reduce kiya ja sakta hai.
 
 # 4. Persistence (Very Important)
 ## Does Redis persist data?
