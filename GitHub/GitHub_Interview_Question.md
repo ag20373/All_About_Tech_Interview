@@ -762,18 +762,116 @@ GitHub Issues project me bugs, tasks, feature requests aur improvements ko track
 GitHub Discussions ek forum-like feature hai jo project contributors aur users ko questions, ideas, feedback aur general discussions karne ki facility deta hai. Ye Issues se alag hai kyunki Discussions ka focus conversation par hota hai, task tracking par nahi.
 
 # 6. Access Control & Permissions
-What are GitHub collaborators?
-What are GitHub teams and organizations?
-What is branch protection rule?
-What is required status check in GitHub?
+## What are GitHub collaborators?
+1. Techincal
+-- Collaborators wo users hote hain jinko repository owner access deta hai repository par kaam karne ke liye.
+-- Wo :
+    - Code push kar sakte hain
+    - PR create kar sakte hain
+    - Issues manage kar sakte hain
+(Permission Ke According)
+-- Mostly personal repositories me use hote hain
+-- Repository owner invite karta hai
+-- Different permission levels ho sakti hain
+
+
+## What are GitHub teams and organizations?
+- Techincal
+-- Organization : GitHub me Organization ek shared account hota hai jo multiple repositories aur users manage karta hai.
+-- Team : Team organization ke andar users ka group hota hai.
+-- Example : 
+    Organization
+        - Backend Team
+        - FrontEnd Team
+        - QA Team
+-- Organization : Company level management
+-- Team = User group
+-- Permissions team level par assign ki ja sakti hain
+
+## What is branch protection rule?
+- Techincal
+-- Branch Protection Rules GitHub me important branches (main/master) ko protect karne ke liye use hote hain.
+-- Ye prevent kar sakte hain:
+    - Direct Pushes 
+    - Force pushes
+    - Branch Deletion
+    - Unreviewed merges
+
+## What is required status check in GitHub?
+- Techincal
+-- Required Status Checks GitHub branch protection ka part hote hain jo ensure karte hain ki specific checks pass hone ke baad hi PR merge ho sake.
+-- Example :
+    - Build 
+    - Unit Tests
+    - SonarQube Analysis
+    - Security Scan
+
 
 # 7. GitHub Workflow & CI/CD
-What is GitHub Flow?
-What is Git Flow?
-What are GitHub Actions?
-What is CI/CD pipeline in GitHub?
-How do GitHub Actions automate builds and tests?
-What is a workflow file in GitHub Actions?
+## What is GitHub Flow?
+- Techincal
+-- GitHub Flow ek lightweigth branching strategy hai.
+-- Flow : 
+    Main Branch
+     ↓
+    Create Feature Branch
+     ↓
+    Make Changes
+     ↓
+    Create Pull Request
+     ↓
+    Code Review
+     ↓
+    Merge to Main
+-- Simple workflow 
+-- Continuous deployment friendly
+-- Small teams me popular
+-- Main branch always deployable.
+
+
+## What is Git Flow?
+Ans : 
+-- Git Flow me multiple branch types hoti hain:
+    main
+    develop
+    feature/*
+    release/*
+    Hotfix/*
+-- Large Projects me use hota hai.
+-- Release managegement easy
+-- More Complex than GitHub Flow. 
+
+## What are GitHub Actions?
+Ans :
+-- GitHub Actions GitHub ka automation platform hai
+-- Iska Use: 
+    - Build automation
+    - Testing
+    - Deployment
+    - CI/CD
+-- Ke liye hota hai.
+
+## What is CI/CD pipeline in GitHub?
+Ans :
+-- CI (Continuous Intergation)
+-- Har Code Changes :
+    - Build hota hai.
+    - Test hota hai.
+-- CD (Continuous Delivery / Deployment)
+    - Successful build ke baad : Application deploy hoti hai.
+-- Faster Release
+-- Less Manula Work
+-- Better Code Quality-
+-- Faster Feedback.
+
+## How do GitHub Actions automate builds and tests?
+GitHub Actions push ya pull request events par workflows trigger karte hain jo automatically application build karte hain, tests run karte hain aur results provide karte hain.
+
+## What is a workflow file in GitHub Actions?
+- Technical 
+-- Workflow file ek YAML file hoti hai jo GitHub Actions ko batati hai ki kaunse steps execute karne hain.
+-- Location : ".github/workflows/"
+
 
 # 8. Advanced Git Concepts
 What is a detached HEAD state?

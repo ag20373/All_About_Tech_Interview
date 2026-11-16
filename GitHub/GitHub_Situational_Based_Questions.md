@@ -203,203 +203,279 @@ Ans :
 - You are halfway through a feature.
 - Production issue arrives.
 - How will you switch branches without committing incomplete work?
+Ans : 
+-- Ma stash Command Ko Use Kru Ga 
+    git stash
+    git checkout product-fix-branch
 
 ## Q : 
 - You created multiple stashes.
 - How will you identify the correct one?
+Ans 
+-- List All Stash : **git stash list**
+-- View My Stash Changes : **git stash show -p stash@{0}**
+-- I would use git stash list to see all stashes and git stash show -p to inspect the changes before applying the correct one.
 
 ## Q : Difference In git stash apply And git stash pop ?
+-- apply restores the changes but keeps the stash, while pop restores the changes and deletes the stash entry.
 
 ## Q : Can stash cause conflicts? What would you do ?
+-- Yes. If the code changed after the stash was created, conflicts can occur when applying it.
+-- Resolve Conflicts manually : 
+    git status
+    git add .
+-- then Continue Working
+
 
 # Reflog Scenarios
 ## Q :
 - You accidentally ran: git reset --hard
 - and lost commits.
 - How will you recover them?
+Ans : 
+-- Use reflog : **git reflog**
+-- Find the lost commit and reset back to it : git reset --hard <commit-hash>
 
 ## Q : 
 - You rebased and lost history.
 - What Git command helps recover it?
+Ans : git reflog helps recover commits lost due to rebase, reset, or other history-rewriting operations.
 
 ## Q : Difference between: git log and git reflog ?
+| git log                               | git reflog                                   |
+| ------------------------------------- | -------------------------------------------- |
+| Shows commit history of the branch    | Shows history of HEAD and branch movements   |
+| Displays reachable commits            | Displays reachable and recently lost commits |
+| Cannot easily recover deleted commits | Can help recover deleted/lost commits        |
+
 
 # Reset/Revert Scenarios
 ## Q : 
 - A bad commit is already pushed to remote.
 - Would you use reset or revert?
 - Why?
+Ans : I Will Use **git revert <commit-hash>**
+-- Because the commit is already shared. revert safely creates a new commit that undoes the changes without rewriting history.
 
 ## Q : 
 - You committed locally but haven't pushed.
 - Need to remove commit.
 - What would you use?
+Ans : I Will Use **git reset --hard HEAD~1**
+-- Since the commit hasn't been pushed, I can safely remove it using git reset.
 
 ## Q : 
 - Production branch contains a bad commit.
 - Safest way to undo it?
+Ans : git Revert
 
 ## Q : Difference in git reset --soft ,--mixed ,--hard ?
+--soft removes commits but keeps changes staged, --mixed removes commits and unstages changes, and --hard removes commits and discards all changes completely.
 
 # Production Release Scenarios
 ## Q : 
 - Production release is tomorrow.
 - One critical bug fix is ready.
 - How would you move only that fix to release branch?
+Ans : Using cherry-pick command.
+-- I would cherry-pick the bug-fix commit into the release branch so only the required fix is included.
 
 ## Q : 
 - Release branch and main branch diverged.
 - How would you handle it?
+Ans : 
+-- Sync the branches by merging the required changes
+    git checkout release-branch
+    git merge main
+-- or merge release back into main if needed...
+-- I would analyze the differences and merge the necessary changes so both branches stay consistent.
 
 ## Q : 
 - Hotfix was done directly on production branch.
 - How will you bring it back to main branch?
+Ans : After the production hotfix, I would bring the same change into main using merge or cherry-pick to prevent future releases from losing the fix.
 
 ## Q : 
 - Production rollback is needed immediately.
 - What options do you have?
+Ans : 
+-- Revert The bad Commit : **git revert <commit-hash>**
+-- Revert The merged PR : **git revert -m 1 <merge-commit>**
 
 # Collaboration Scenarios
-## Q : Q37
+## Q :
+- Another developer force-pushed your shared branch.
+- What happens?
+- How will you recover?
+Ans :
+-- Your local and remote histories may no longer match
+-- Use : **git reflog**
+-- to Find the Lost Commits and recover them.
 
-Another developer force-pushed your shared branch.
+## Q :
+- You pulled latest code and many conflicts appeared.
+- How would you proceed?
+Ans : 
+-- Review each conflict.
+-- Resolve them manually.
+-- Test the application.
+-- Commit the resolution.
+"I would resolve the conflicts file by file, verify the final code, run tests, and then complete the merge."
 
-What happens?
+## Q : 
+- Your teammate deleted a branch accidentally.
+- Can Git recover it?
+- How?
+Ans : 
+-- Use : **git reflog**
+-- Find the Last commit of the deleted branch and recreate it :
+    **git checkout -b branch-name <commit-hash>**
 
-How will you recover?
+## Q :
+- You need to review another developer's code.
+- What things do you check in a PR?
+Ans :
+-- Correctness 
+-- Business logic 
+-- Code quality
+-- Edge cases
+-- Performance
+-- Security
+-- Test coverage
+-- Readability
+-- Unnecessary changes
 
-Q38
-
-You pulled latest code and many conflicts appeared.
-
-How would you proceed?
-
-Q39
-
-Your teammate deleted a branch accidentally.
-
-Can Git recover it?
-
-How?
-
-Q40
-
-You need to review another developer's code.
-
-What things do you check in a PR?
 
 # GitHub Specific Scenarios
-Q41
+## Q :
+- A PR is approved but CI pipeline fails.
+- Would you merge it?
+- Why?
+Ans : 
+-- The build/tests are failing, so the code may be unstable.
+-- No. Approval alone is not enough. If CI fails, I would first fix the issues and ensure the pipeline passes before merging.
 
-A PR is approved but CI pipeline fails.
+## Q : 
+- A PR passes tests but code quality looks poor.
+- What would you do?
+Ans :
+-- Request changes and provide review comments.
+-- Even if tests pass, I would request changes if the code doesn't meet quality, maintainability, or team standards
 
-Would you merge it?
+## Q :
+- Branch protection rules prevent direct push.
+- Why do teams use this?
+Ans : 
+-- To protect important branches from accidental changes.
+-- Branch protection ensures that changes go through PR reviews, approvals, and CI checks before reaching important branches like main
 
-Why?
+## Q : 
+- Someone force-pushes to main.
+- What risks exist?
+Ans :
+-- History rewrite
+-- Lost Commits
+-- Broken branches
+-- Team synchronization issues.
 
-Q42
+## Q : 
+- A PR was merged accidentally.
+- How will you undo it?
+Ans : 
+-- Revert the merge commit:
+-- I would revert the merge commit, which safely undoes the PR without rewriting history.
 
-A PR passes tests but code quality looks poor.
+## Q :
+- You need mandatory code review before merge.
+- How can GitHub enforce this?
+Ans : 
+-- Use Branch Protection Rules and require PR approvals.
+-- GitHub Branch Protection Rules can require one or more approvals before a PR is allowed to merge.
 
-What would you do?
-
-Q43
-
-Branch protection rules prevent direct push.
-
-Why do teams use this?
-
-Q44
-
-Someone force-pushes to main.
-
-What risks exist?
-
-Q45
-
-A PR was merged accidentally.
-
-How will you undo it?
-
-Q46
-
-You need mandatory code review before merge.
-
-How can GitHub enforce this?
-
-Q47
-
-You want deployment only after PR merge.
-
-How would GitHub Actions help?
+## Q :
+- You want deployment only after PR merge.
+- How would GitHub Actions help?
+Ans : 
+-- Configure a GitHub Actions workflow to trigger on:
+on:
+  push:
+    branches:
+      - main
 
 # Advanced Senior-Level Scenarios
-Q48
-
-You have:
-
-main
+## Q :
+- You have:
+- main
  |
  ├── feature-A
  |
  └── feature-B
+- Feature-B depends on Feature-A.
+- Feature-A is delayed.
+- How will you continue Feature-B development?
+Ans : 
+-- Create Feature-B from Feature-A and continue development on top of it.
+-- If Feature-A is delayed, keep Feature-B open and rebase/update it as Feature-A changes.
 
-Feature-B depends on Feature-A.
+## Q : 
+- A branch contains 100 commits.
+- Only 3 should be merged.
+- How would you do it?
+Ans : 
+-- Use cherry-pick for the required commits:
+-- I would use git cherry-pick to bring only the 3 required commits into the target branch instead of merging all 100 commits.
 
-Feature-A is delayed.
+## Q :
+- Your branch history looks like:
+- A-B-C-D-E-F
+- You want:
+- A-B-F
+- How?
+Ans :  
+-- Use Interactive Rebase : **git rebase -i HEAD~5**
+-- Drop commits C, D, and E.
+-- I would use interactive rebase (git rebase -i) and drop the unwanted commits C, D, and E, leaving only A-B-F in the branch history.
 
-How will you continue Feature-B development?
+## Q :
+- You accidentally exposed a password in Git history and pushed it.
+- What steps would you take?
+Ans : 
+-- Immediately revoke/rotate the password or secret.
+-- Remove the secret from the repository history
+-- Force-push the cleaned history (if allowed).
+-- Inform the team/security team.
+-- Verify the secret is no longer usable.
 
-Q49
+## Q :
+- A repository became very large (5+ GB).
+- What Git strategies would you use?
+Ans : 
+-- Remove unnecessary files from history.
+-- Use Git LFS for large binaries.
+-- Avoid committing generated/build files.
+-- Use proper .gitignore.
+-- Archive old data if possible.
 
-A branch contains 100 commits.
+## Q :
+- You need to find:
+- "Which commit introduced this bug?"
+- What Git feature helps?
+- (Hint: git bisect)
+Ans :
+-- Use : **git bisect**
+-- "I would use git bisect, which performs a binary search through commits to identify the commit that introduced the bug."
 
-Only 3 should be merged.
+## Q : 
+- A bug exists today but wasn't there last week.
+- How would you identify the exact commit responsible?
+Ans : 
+-- Use : **git bisect**
+-- Mark : 
+    git bisect bad
+    git bisect good <old-working-commit>
+-- Git will help narrow down the offending commit.
 
-How would you do it?
-
-Q50
-
-Your branch history looks like:
-
-A-B-C-D-E-F
-
-You want:
-
-A-B-F
-
-How?
-
-Q51
-
-You accidentally exposed a password in Git history and pushed it.
-
-What steps would you take?
-
-Q52
-
-A repository became very large (5+ GB).
-
-What Git strategies would you use?
-
-Q53
-
-You need to find:
-
-"Which commit introduced this bug?"
-
-What Git feature helps?
-
-(Hint: git bisect)
-
-Q54
-
-A bug exists today but wasn't there last week.
-
-How would you identify the exact commit responsible?
-
-Q55
-
-A PR contains 5000 lines changed.
-
-As reviewer, what concerns do you have?
+## Q :
+- A PR contains 5000 lines changed.
+- As reviewer, what concerns do you have?
+Ans : A very large PR is harder to review effectively and increases the chance of bugs being missed. I'd prefer it to be split into smaller, focused PRs if possible.
