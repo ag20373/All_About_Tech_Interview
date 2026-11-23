@@ -436,11 +436,11 @@ takeUforward ke Computer Networks curriculum ke according, **OSI (Open Systems I
 +---------------------------------------+          +---------------------------------------+
 ```
 ### 4. Step-by-Step Working (Kaise Kaam Karta Hai)
--- Data Creation & Formatting (Layers 7, 6, 5): Browser ek HTTP request (Data) banata hai; Presentation layer use format/encrypt karti hai, aur Session layer communication session establish karti hai.
--- Encapsulation on Sender Side (Layers 4 -> 1):
-    - Transport Layer (L4) data ko tod kar TCP/UDP header (Port Numbers) lagati hai $\rightarrow$ Segment banta hai.
-    - Network Layer (L3) Source aur Destination IP header lagati hai $\rightarrow$ Packet banta hai.
-    - Data Link Layer (L2) Source aur Destination MAC address aur error-check trailer lagati hai $\rightarrow$ Frame banta hai.
-    - Physical Layer (L1) poore frame ko raw Bits (0s aur 1s) mein badal kar wire ya Wi-Fi waves par bhej deti hai (Data => Segment => Packet => Frame => Bits).
--- Network Traversal: Local Switch Layer 2 par MAC address dekh kar frame forward karta hai, aur Router Layer 3 par IP address dekh kar packet ko destination network tak route karta hai.
--- Decapsulation on Receiver Side (Layers 1 -> 7): Receiver bits capture karta hai aur neeche se upar jaate hue har layer apna header check karke remove (strip) karti hai (Bits => Frame => Packet => Segment => Data), aur finally clean message destination application ko mil jaata hai.
+* Data Creation & Formatting (Layers 7, 6, 5): Browser ek HTTP request (Data) banata hai; Presentation layer use format/encrypt karti hai, aur Session layer communication session establish karti hai.
+* Encapsulation on Sender Side (Layers 4 -> 1):
+    * Transport Layer (L4) data ko tod kar TCP/UDP header (Port Numbers) lagati hai $\rightarrow$ Segment banta hai.
+    * Network Layer (L3) Source aur Destination IP header lagati hai $\rightarrow$ Packet banta hai.
+    * Data Link Layer (L2) Source aur Destination MAC address aur error-check trailer lagati hai $\rightarrow$ Frame banta hai.
+    * Physical Layer (L1) poore frame ko raw Bits (0s aur 1s) mein badal kar wire ya Wi-Fi waves par bhej deti hai (Data => Segment => Packet => Frame => Bits).
+* Network Traversal: Local Switch Layer 2 par MAC address dekh kar frame forward karta hai, aur Router Layer 3 par IP address dekh kar packet ko destination network tak route karta hai.
+* Decapsulation on Receiver Side (Layers 1 -> 7): Receiver bits capture karta hai aur neeche se upar jaate hue har layer apna header check karke remove (strip) karti hai (Bits => Frame => Packet => Segment => Data), aur finally clean message destination application ko mil jaata hai.
