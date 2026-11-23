@@ -444,3 +444,91 @@ takeUforward ke Computer Networks curriculum ke according, **OSI (Open Systems I
     * Physical Layer (L1) poore frame ko raw Bits (0s aur 1s) mein badal kar wire ya Wi-Fi waves par bhej deti hai (Data => Segment => Packet => Frame => Bits).
 * Network Traversal: Local Switch Layer 2 par MAC address dekh kar frame forward karta hai, aur Router Layer 3 par IP address dekh kar packet ko destination network tak route karta hai.
 * Decapsulation on Receiver Side (Layers 1 -> 7): Receiver bits capture karta hai aur neeche se upar jaate hue har layer apna header check karke remove (strip) karti hai (Bits => Frame => Packet => Segment => Data), aur finally clean message destination application ko mil jaata hai.
+
+## 8. How Data Travels Up the OSI Model (Reference: takeUforward CN Series)
+
+### 1. Concept with Real-World Example (Daily Life Routine)
+Socho aapke ghar ke gate par ek courier parcel aaya hai. Jab parcel bheja gaya tha, toh use kayi layers mein pack kiya gaya tha; ab jab woh aapke paas pahuncha hai, toh aap use **neeche se upar (outside to inside)** ek-ek karke kholte ho:
+
+* **Step 1 (Gatekeeper / Physical Layer):** Delivery boy gate par parcel rakhta hai — bas ek physical box aapke ghar ke andar aaya hai.
+* **Step 2 (Building Guard / Data Link Layer):** Guard box ke bahar aapke flat ka number aur seal check karta hai ki parcel sahi flat par aaya hai ya nahi aur box toota toh nahi hai. Phir bahari polythene wrap hata kar andar ka box aage bhejta hai.
+* **Step 3 (Ghar ka Main Door / Network Layer):** Aapke papa box par likha aapka naam aur ghar ka address padhte hain, confirm karte hain ki yeh aapke hi ghar ka hai, aur address slip hata kar box andar le aate hain.
+* **Step 4 (Room & Family Member / Transport Layer):** Box par likha hai *"For Amit - Room No. 2"*. Aapke room tak box pahunchta hai, aap shipping sticker hatate ho aur check karte ho ki saare parts (1 of 2, 2 of 2) poore aaye hain ya nahi.
+* **Step 5 (Order Confirmation / Session Layer):** Aap app par check karte ho ki yeh wahi active order hai jo aapne place kiya tha.
+* **Step 6 (Gift Wrap & Lock / Presentation Layer):** Andar ek gift wrap aur password-protected box hai; aap lock kholte ho aur wrap hatate ho taaki asli cheez dikhe.
+* **Step 7 (Asli Saaman / Application Layer):** Finally aapke haath mein aapka naya phone ya book aa jaati hai — ab aap use directly use kar sakte ho!
+
+Bilkul isi tarah jab receiver device (aapka phone/laptop) network se signals receive karta hai, toh data OSI model mein **Layer 1 se Layer 7 ki taraf upar** travel karta hai, aur har layer apna wrapper (**Header/Trailer**) hatati jaati hai — ise **Decapsulation** kehte hain!
+
+---
+
+### 2. Technical Explanation (Relating to the Example)
+takeUforward ke Computer Networks curriculum ke according, receiver side par data ke upar jaane ke process ko **Decapsulation** kehte hain:
+
+* **What is Decapsulation?**
+  * Sender side par data neeche jaate waqt har layer ne apna header/trailer add kiya tha (*Encapsulation*).
+  * Receiver side par data **Layer 1 (Physical)** se start hokar **Layer 7 (Application)** tak upar jaata hai. Har layer sirf apne corresponding header ko read karke verify karti hai, use remove (**strip**) karti hai, aur bacha hua **Payload** upar wali layer ko pass kar deti hai.
+
+* **Data Transformation (PDU Conversion Upward):**
+  * Jaise-jaise headers hat-te hain, data unit ka roop badalta jaata hai:
+  * `Bits (L1)` $\rightarrow$ `Frame (L2)` $\rightarrow$ `Packet (L3)` $\rightarrow$ `Segment / Datagram (L4)` $\rightarrow$ `Meaningful Application Data (L5-L7)`.
+
+* **Real-World Example (Opening an HTTPS Website):**
+  * Jab aap browser mein koi HTTPS website kholte ho, toh server se aane wala response aapke laptop par isi upward journey se guzarta hai — raw Wi-Fi waves se shuru hokar browser screen par HTML webpage dikhne tak.
+
+---
+
+### 3. Step-by-Step Working (Kaise Kaam Karta Hai: Layer 1 $\rightarrow$ Layer 7)
+1. **Step 1 – Physical Layer Receives Bits (`L1`):**
+   * Network card (NIC) ya Wi-Fi antenna cable se aane wale electrical pulses, fiber light signals, ya radio waves ko capture karta hai aur unhe raw **Bits (`0`s aur `1`s)** mein convert karke Layer 2 ko bhejta hai.
+2. **Step 2 – Data Link Layer Processes Frames (`L2`):**
+   * Raw bits ko group karke **Frame** banaya jaata hai. Yeh layer **Destination MAC Address** check karti hai (kya frame isi device ke liye hai?) aur **FCS (Frame Check Sequence)** se transmission errors check karti hai. Valid hone par MAC header aur trailer hata kar payload ko Layer 3 par bhejti hai.
+3. **Step 3 – Network Layer Processes Packets (`L3`):**
+   * Ab data ek **Packet** hai. Layer 3 **Destination IP Address** verify karti hai ki packet isi machine ka hai. Phir IP header remove karke payload ko Layer 4 ko pass karti hai (aur batati hai ki aage TCP use hoga ya UDP).
+4. **Step 4 – Transport Layer Processes Segments/Datagrams (`L4`):**
+   * Layer 4 **Destination Port Number** padhti hai taaki pata chale kis application ko data dena hai (jaise HTTPS ke liye **Port 443**, DNS ke liye **Port 53**). Agar **TCP** hai, toh sequence numbers se segments ko sahi order mein lagati hai, missing packets ke liye retransmission/ACK handle karti hai, aur transport header hata kar data upar bhejti hai.
+5. **Step 5 – Session Layer Manages Session (`L5`):**
+   * Yeh layer verify karti hai ki yeh data kis active communication session (ongoing conversation) ka hissa hai, session state maintain karti hai, aur data ko Layer 6 par bhejti hai.
+6. **Step 6 – Presentation Layer Formats & Decrypts (`L6`):**
+   * Agar data encrypted tha (jaise HTTPS mein **TLS encryption**), toh yahan **Decryption** hota hai, compressed data decompress hota hai, aur character encoding (jaise UTF-8) ko readable format mein convert karke Layer 7 ko diya jaata hai.
+7. **Step 7 – Application Layer Delivers Data (`L7`):**
+   * Topmost layer par **HTTP/HTTPS, SMTP, ya DNS** jaise protocols processed data ko user application tak pahunchate hain — aur aapke Chrome browser par finally webpage render ho jaata hai!
+
+---
+
+### 4. Diagram (Upward Flow & Decapsulation on Receiver Side)
+```text
+  [Receiver Application: Chrome Browser / Email App]
+                         ^
+                         |  (Clean HTML / JSON / Message)
++-------------------------------------------------------------------+
+| Layer 7: Application   | HTTP/HTTPS, DNS, SMTP protocols          |
++-------------------------------------------------------------------+
+                         ^  (Decrypted & Formatted Data)
++-------------------------------------------------------------------+
+| Layer 6: Presentation  | Decrypts (TLS), Decompresses, Decodes    |
++-------------------------------------------------------------------+
+                         ^  (Session-Verified Data)
++-------------------------------------------------------------------+
+| Layer 5: Session       | Verifies & maintains active session      |
++-------------------------------------------------------------------+
+                         ^  (Strips TCP/UDP Header - Port 443/53)
++-------------------------------------------------------------------+
+| Layer 4: Transport     | Checks Port No., Reorders Segments (TCP) |
++-------------------------------------------------------------------+
+                         ^  (Strips IP Header - Destination IP)
++-------------------------------------------------------------------+
+| Layer 3: Network       | Verifies Destination IP Address (Packet) |
++-------------------------------------------------------------------+
+                         ^  (Strips MAC Header & FCS Trailer)
++-------------------------------------------------------------------+
+| Layer 2: Data Link     | Checks Dest MAC & Errors (Frame)         |
++-------------------------------------------------------------------+
+                         ^  (Raw 0s and 1s)
++-------------------------------------------------------------------+
+| Layer 1: Physical      | Receives Electrical / Light / Wi-Fi Bits |
++-------------------------------------------------------------------+
+                         ^
+                         |
+         [Transmission Medium: Cable / Fiber / Wi-Fi]
+```         
