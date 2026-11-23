@@ -617,3 +617,99 @@ takeUforward ke Computer Networks curriculum ke according, **TCP/IP Model** real
                            [Pkt #3] ---> Path A ---+           |
                                                                v
   [Original Data] <----- 3. TCP reorders & reassembles <== [Receiver TCP]
+```
+
+## 10. Encapsulation and Decapsulation
+
+### 1. Concept with Real-World Example (Daily Life Routine)
+Socho aapko ek important gift (ek wristwatch) apne dost ko courier karna hai. Aap directly khuli watch courier boy ke haath mein nahi pakda dete, balki use step-by-step pack karte ho:
+
+* **Encapsulation (Gift Packing - Sender Side):**
+  1. Pehle aap watch (**Asli Data**) ko ek chhote velvet box mein rakhte ho (**Transport Layer** - jismein likha hai *"For: Rahul's Bedroom"*).
+  2. Phir us velvet box ko ek brown cardboard box mein daalte ho aur upar **From & To Home Address** likhte ho (**Network Layer**).
+  3. Phir us cardboard box par ek waterproof polythene wrap chadhate ho aur courier company ka barcode/seal lagate ho (**Data Link Layer**).
+  4. Finally courier van us packed parcel ko road par le jaati hai (**Physical Layer**).
+
+* **Decapsulation (Gift Unpacking - Receiver Side):**
+  * Jab parcel dost ke ghar pahunchta hai, toh woh bilkul ulte order mein ek-ek layer kholta hai:
+    1. Pehle waterproof polythene wrap faad kar fenkta hai (**Data Link Header removed**).
+    2. Phir cardboard box kholta hai aur address slip hata deta hai (**Network Header removed**).
+    3. Phir velvet box kholta hai (**Transport Header removed**).
+    4. Aur finally andar se asli **Wristwatch (Original Data)** nikal kar pehen leta hai!
+
+Networking mein **data ke upar layer-by-layer control info (headers) chadhane ko Encapsulation** kehte hain, aur **receiver par un headers ko ek-ek karke utaarne ko Decapsulation** kehte hain.
+
+---
+
+### 2. Technical Explanation (Relating to the Example)
+Computer networks mein jab data ek device se doosre device par jaata hai, toh networking stack (OSI ya TCP/IP) ki har layer apna kaam karne ke liye data ke saath apni **Header (aur kabhi Trailer)** information attach karti hai:
+
+* **Encapsulation (Top-to-Bottom Wrapping on Sender):**
+  * Jab data Sender ke **Application Layer** se neeche **Physical Layer** ki taraf jaata hai, toh har layer upar wali layer se aaye hue poore data block ko apna **Payload** maanti hai aur uske aage apna **Header** (control information jaise Port, IP, MAC) chipka deti hai.
+  * **PDU (Protocol Data Unit) Transformation:**
+    * `Application Layer:` **Data**
+    * `Transport Layer:` TCP/UDP Header + Data = **Segment** (ya Datagram)
+    * `Network Layer:` IP Header + Segment = **Packet**
+    * `Data Link Layer:` MAC Header + Packet + FCS Trailer = **Frame**
+    * `Physical Layer:` Frame converted into `0`s and `1`s = **Bits**
+
+* **Decapsulation (Bottom-to-Top Unwrapping on Receiver):**
+  * Jab bits Receiver ke **Physical Layer** par pahunchti hain, toh data neeche se upar (**Layer 1 $\rightarrow$ Layer 7**) travel karta hai.
+  * Har layer sirf apne corresponding header ko read karke verify karti hai (jaise Network layer Destination IP check karti hai), us header ko **strip (remove)** karti hai, aur bacha hua payload upar wali layer ko pass kar deti hai.
+
+* **Why is this Needed?**
+  * Har layer ko sirf apne header se matlab hota hai — Router ko sirf **IP Header** padhna hota hai, Switch ko sirf **MAC Header**, aur Browser ko sirf **Application Data**. Isse har device apna kaam fast aur independently kar paata hai.
+
+---
+
+### 3. Step-by-Step Working (Kaise Kaam Karta Hai)
+**Part A: Encapsulation (Sender Side - Top to Down)**
+1. **Application Layer:** User data generate karti hai (e.g., ek HTTP GET request ya WhatsApp text) aur Transport layer ko bhejti hai.
+2. **Transport Layer:** Data ko chhote chunks mein tod kar **TCP/UDP Header** (Source Port, Destination Port, Sequence Number) add karti hai $\rightarrow$ **Segment** taiyaar hota hai.
+3. **Network Layer:** Segment ke aage **IP Header** (Source IP, Destination IP) lagati hai taaki packet Internet par route ho sake $\rightarrow$ **Packet** taiyaar hota hai.
+4. **Data Link Layer:** Packet ke aage **Frame Header** (Source MAC, Destination MAC) aur peeche **FCS Trailer** (error check ke liye) lagati hai $\rightarrow$ **Frame** taiyaar hota hai.
+5. **Physical Layer:** Poore Frame ko raw **Bits (`0`s aur `1`s)** mein convert karke electrical pulses, optical light, ya Wi-Fi waves ke zariye transmit kar deti hai.
+
+**Part B: Decapsulation (Receiver Side - Bottom to Up)**
+1. **Physical Layer:** Medium se signals receive karke wapas **Bits** banati hai aur Data Link layer ko deti hai.
+2. **Data Link Layer:** Destination MAC address match karti hai, FCS se check karti hai ki frame corrupt toh nahi hua, aur MAC Header + Trailer remove karke **Packet** upar bhejti hai.
+3. **Network Layer:** Destination IP address verify karti hai ki packet isi device ke liye hai, aur IP Header hata kar **Segment** Transport layer ko deti hai.
+4. **Transport Layer:** Port number dekh kar sahi application pehchanti hai, segments ko sequence mein lagati hai, aur TCP/UDP Header remove karke clean **Data** Application layer ko deliver kar deti hai.
+
+---
+
+### 4. Diagram (End-to-End Encapsulation & Decapsulation Flow)
+```text
+   SENDER (ENCAPSULATION: Top -> Down)                RECEIVER (DECAPSULATION: Bottom -> Up)
++---------------------------------------+          +---------------------------------------+
+| Application Layer                     |          | Application Layer                     |
+|            [ User Data ]              |          |            [ User Data ]              |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| Transport Layer                       |          | Transport Layer                       |
+|      [ TCP Hdr | User Data ]          |          |      [ TCP Hdr | User Data ]          |
+|              (Segment)                |          |        (Strips TCP Hdr)               |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| Network Layer                         |          | Network Layer                         |
+|  [ IP Hdr | TCP Hdr | User Data ]     |          |  [ IP Hdr | TCP Hdr | User Data ]     |
+|              (Packet)                 |          |         (Strips IP Hdr)               |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| Data Link Layer                       |          | Data Link Layer                       |
+| [ MAC Hdr | IP | TCP | Data | FCS ]   |          | [ MAC Hdr | IP | TCP | Data | FCS ]   |
+|               (Frame)                 |          |     (Strips MAC Hdr & FCS)            |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| Physical Layer                        |          | Physical Layer                        |
+|        10110010101110010101           | =======> |        10110010101110010101           |
+|               (Bits)                  |  Wire /  |               (Bits)                  |
++---------------------------------------+  Wi-Fi   +---------------------------------------+  
