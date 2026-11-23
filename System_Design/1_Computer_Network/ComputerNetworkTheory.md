@@ -713,3 +713,6 @@ Computer networks mein jab data ek device se doosre device par jaata hai, toh ne
 |        10110010101110010101           | =======> |        10110010101110010101           |
 |               (Bits)                  |  Wire /  |               (Bits)                  |
 +---------------------------------------+  Wi-Fi   +---------------------------------------+  
+```
+
+# 
