@@ -532,3 +532,88 @@ takeUforward ke Computer Networks curriculum ke according, receiver side par dat
                          |
          [Transmission Medium: Cable / Fiber / Wi-Fi]
 ```         
+
+
+## 9. TCP/IP Model (Reference: takeUforward CN Series)
+
+### 1. Concept with Real-World Example (Daily Life Routine)
+Socho aapko ek wedding album (500 photos) apne cousin ko bhejni hai jo doosre shehar mein rehta hai.
+
+* **OSI Model vs. TCP/IP Model ka Farq:**
+  * **OSI Model** ek architecture blueprint (naksha) ki tarah hai jo ghar banane ke 7 rules sikhata hai.
+  * **TCP/IP Model** woh **asli bana hua ghar** hai jismein hum actually rehte hain! Real Internet 7 layers ke theoretical rules par nahi, balki **TCP/IP Model** ke practical setup par chalta hai.
+
+* **TCP aur IP ki Jodi (Daily Life Routine Example):**
+  * **TCP (Careful Packing Manager):** Aap saari 500 photos ek saath nahi bhejte. Packing Manager (TCP) unhe 10 chhote envelopes mein daalta hai, har envelope par number likhta hai (`1 of 10`, `2 of 10`...), aur cousin ko phone karke check karta hai ki saare envelopes sahi salamat mile ya nahi. Agar Envelope #4 raste mein kho gaya, toh Manager wahi #4 dobara bhejta hai.
+  * **IP (Courier & GPS Navigation System):** Courier company (IP) ko is baat se koi matlab nahi ki envelope ke andar photos hain ya letters — uska kaam sirf envelope par likha **From Address (Source IP)** aur **To Address (Destination IP)** padhna aur best highway/route se use cousin ke shehar tak pahunchana hai (chahe Envelope #1 ek raste se jaye aur Envelope #2 doosre raste se).
+
+Dono milkar (**TCP + IP**) ensure karte hain ki aapka data sahi address par bhi pahunche aur bina ek bhi photo khoye sahi order mein mile!
+
+---
+
+### 2. Technical Explanation (Relating to the Example)
+takeUforward ke Computer Networks curriculum ke according, **TCP/IP Model** real-world Internet ka practical networking framework hai:
+
+* **TCP/IP is a Protocol Suite (Sirf 2 Protocols Nahi Hain):**
+  * Iska naam iske do sabse important protocols — **Transmission Control Protocol (TCP)** aur **Internet Protocol (IP)** — par rakha gaya hai, lekin actually yeh poore networking stack ke **multiple protocols ka ek collection (suite)** hai.
+  * **Why Protocols Are Needed:** Bina common rules (message format, length, sender/receiver address) ke alag-alag devices ek-doosre ka data samajh hi nahi payenge.
+
+* **TCP vs. UDP (Transport Layer Choices):**
+  * **TCP:** Reliable, connection-oriented protocol jo **sequencing, acknowledgements (ACK), aur retransmissions** deta hai (Web browsing, Emails, File downloads ke liye).
+  * **UDP (User Datagram Protocol):** Fast, connectionless protocol jo speed par focus karta hai bina retransmission guarantee ke (Live streaming, Online gaming, Video calls ke liye). Kyunki Internet par reliability ke liye TCP historically sabse zyada use hua hai, isliye suite ko **TCP/IP** kaha jaata hai (na ki UDP/IP).
+
+* **Layers of the TCP/IP Model & Their Data Units (PDUs):**
+  * Practical implementation mein TCP/IP ko **4 ya 5 layers** (jab Network Access ko Data Link aur Physical mein split karte hain) mein dekha jaata hai:
+    1. **Application Layer (`PDU: Application Message`):** OSI ki top 3 layers (Application, Presentation, Session) ko combine karta hai. *Protocols:* **HTTP/HTTPS, DNS, FTP, SMTP**.
+    2. **Transport Layer (`PDU: TCP Segment / UDP Datagram`):** Process-to-process delivery, port numbers, aur reliability handle karta hai. *Protocols:* **TCP, UDP**.
+    3. **Network / Internet Layer (`PDU: IP Packet`):** Logical addressing aur inter-network routing handle karta hai. *Protocols:* **IP (IPv4/IPv6), ICMP, ARP**.
+    4. **Data Link Layer (`PDU: Ethernet Frame`):** Local network (LAN) par MAC addressing aur frame delivery karta hai. *Protocols:* **Ethernet, Wi-Fi**.
+    5. **Physical Layer (`PDU: Bits`):** Transmission medium (copper wire, optical fiber, radio waves) par actual electrical/optical/radio signals bhejta hai.
+
+---
+
+### 3. Step-by-Step Working (Kaise Kaam Karta Hai: TCP + IP Together)
+1. **Application Message Creation:** Sender par Application Layer (jaise browser ya app) ek **Application Message** generate karti hai (using HTTP, DNS, ya FTP) aur Transport Layer ko deti hai.
+2. **Segmentation by TCP:** **TCP** is bade message ko chhote manageable chunks mein todta hai jinhe **Segments** kehte hain, aur har segment mein Port Number aur **Sequence Number** add karta hai.
+3. **Addressing & Routing by IP:** Har segment **Internet Layer (IP)** ke paas jaata hai, jahan Source aur Destination IP address lag kar **IP Packet** banta hai. Routers in packets ko alag-alag network paths ke zariye destination ki taraf forward karte hain.
+4. **Frame & Bit Transmission:** **Data Link Layer** packet ko **Ethernet Frame** mein wrap karke local MAC address lagati hai, aur **Physical Layer** use raw **Bits** (electrical/light/radio signals) mein badal kar wire ya air mein bhej deti hai.
+5. **Reassembly at Destination:** Receiver par ulte order mein headers remove (**decapsulate**) hote hain. **TCP** alag-alag raston se aaye out-of-order segments ko sequence numbers ki help se sahi order mein **reassemble** karta hai, missing segments retransmit karwata hai, aur complete original message application ko de deta hai.
+
+---
+
+### 4. Diagram (TCP/IP Model Stack & TCP-IP Collaborative Flow)
+```text
+1. TCP/IP PROTOCOL SUITE LAYERS & DATA UNITS (PDUs)
++-----------------------------------+-----------------------------------+---------------+
+| TCP/IP Layer                      | Key Protocols                     | Data Unit     |
++-----------------------------------+-----------------------------------+---------------+
+| 1. Application Layer              | HTTP, HTTPS, DNS, FTP, SMTP       | Message       |
+|    (OSI: App + Pres + Session)    |                                   |               |
++-----------------------------------+-----------------------------------+---------------+
+| 2. Transport Layer                | TCP, UDP                          | Segment /     |
+|                                   |                                   | Datagram      |
++-----------------------------------+-----------------------------------+---------------+
+| 3. Network / Internet Layer       | IP (IPv4/IPv6), ICMP, ARP         | IP Packet     |
++-----------------------------------+-----------------------------------+---------------+
+| 4. Data Link Layer                | Ethernet, Wi-Fi (802.11)          | Frame         |
+|    (Network Access)               |                                   |               |
++-----------------------------------+-----------------------------------+---------------+
+| 5. Physical Layer                 | Fiber, Copper, Radio Signals      | Bits (0s/1s)  |
++-----------------------------------+-----------------------------------+---------------+
+
+
+2. HOW TCP & IP WORK TOGETHER (3 CORE STAGES)
+  [Application Data]
+          |
+          v
+  +---------------+     1. TCP breaks data into numbered Segments
+  |      TCP      | -----> [Seg #1]  [Seg #2]  [Seg #3]
+  +---------------+
+          |
+          v
+  +---------------+     2. IP routes Packets independently via different paths
+  |      IP       | -----> [Pkt #1] ---> Path A ---+
+  +---------------+        [Pkt #2] ---> Path B ---+===> [Receiver IP]
+                           [Pkt #3] ---> Path A ---+           |
+                                                               v
+  [Original Data] <----- 3. TCP reorders & reassembles <== [Receiver TCP]
