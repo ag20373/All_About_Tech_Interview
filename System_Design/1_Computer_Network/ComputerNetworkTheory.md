@@ -118,7 +118,7 @@ Technical terms mein, dono ka role aise samjha jaata hai:
 ---
 
 ### 3. Diagram (How Local Users Connect via Backbone to the Internet)
-
+```text
   [Aapka Phone/Laptop]                [Dost ka Phone (USA/Mumbai)]
           |                                         |
   [Local ISP (Jio/Airtel)]                  [Dost ka Local ISP]
@@ -130,6 +130,7 @@ Technical terms mein, dono ka role aise samjha jaata hai:
        INTERNET BACKBONE (Submarine Optical Fiber /
                 High-Speed Core Routers)
       ===============================================
+```
 
 ### 4. Interview Mein Kaise Bolein
 "Sir/Ma'am, Internet ko hum 'Network of Networks' kehte hain — matlab yeh duniya bhar ke millions of local aur regional networks ka ek global interconnection hai jo standard TCP/IP protocols par kaam karta hai. Aur Backbone Network is Internet ka core ya main highway hota hai. Yeh ultra-high-speed optical fiber aur submarine cables ka infrastructure hai jo bade ISPs, data centers, aur countries ko aapas mein jodta hai taaki massive amount of data minimum latency aur maximum speed ke saath travel kar sake."
@@ -272,3 +273,174 @@ takeUforward ke Computer Networks curriculum ke according, network par data tran
                   |                                 |  (Reassembles using
                   +---> [Router B] ---> [Path 2] ---+   Sequence Numbers:
                         (Packet 3 lost -> Retransmit)   #1 -> #2 -> #3)
+```
+
+# Module-2 (Network Models)
+## 6. Why Do We Need Layered Architecture? (Reference: takeUforward CN Series)
+### 1. Concept with Real-World Example (Daily Life Routine)
+Socho aap ek online food delivery app (jaise Zomato) se apne ghar ke liye khaana order karte ho:
+
+* **Agar sab kaam ek hi banda kare (Without Layers / Single System):**
+  * Socho ek hi aadmi hai jo aapka order likhta hai, sabzi kaat-ta hai, khaana pakata hai, packing karta hai, bill banata hai, aur phir bike chala kar aapke ghar bhi delivery dene aata hai.
+  * Ismein dikkat kya hogi? Agar uski bike kharab ho gayi, toh poora kitchen band ho jayega! Agar menu mein ek nayi dish add karni ho, toh poora system disturb hoga. Is system ko chalana, sudharna, aur scale karna bahut mushkil hoga.
+
+* **Jab kaam alag-alag departments/layers mein baanta jaye (Layered Architecture):**
+  * **Waiter / App Interface (Application Layer):** Sirf aapka order leta hai aur khaana serve karta hai — use nahi pata kitchen mein masala kaise banta hai.
+  * **Kitchen / Chef (Transport Layer):** Sirf khaana sahi quality, packing, aur complete items ke saath taiyaar karta hai — use nahi pata delivery rider kaunsi road se jayega.
+  * **Dispatch & Route Manager (Network Layer):** Customer ka address check karke best GPS route decide karta hai.
+  * **Delivery Rider (Physical Layer):** Bike chala kar actual box aapke ghar ke gate tak pahunchata hai.
+
+Har department ka apna **specific kaam** hai. Agar kal ko delivery rider petrol bike ki jagah electric scooter use karne lage (**Upgrade**), toh Chef ko apni cooking recipe badalne ki zaroorat nahi hai! Aur agar khaana thanda pahuncha (**Debugging**), toh aap seedha Delivery department ko check karoge, Chef ko nahi.
+
+Bas yahi **Layered Architecture** hai — ek bade, complex network communication process ko chhote, independent layers mein todna jahan har layer sirf apni zimmedari nibhati hai.
+
+---
+
+### 2. Technical Explanation (Relating to the Example)
+takeUforward ke Computer Networks curriculum ke according, jab aapka laptop ek web server se baat karta hai, toh peeche bahut saare complex kaam ek saath hote hain. Inhe manage karne ke liye **OSI Model** aur **TCP/IP Model** jaise layered architectures banaye gaye hain:
+
+* **What is a Protocol?**
+  * Protocol computers ke beech communication ke **set of rules** hote hain jo define karte hain ki data kaise format hoga, kaise transmit hoga, aur kaise samjha jayega.
+  * *Examples:*
+    * **HTTP:** Web pages, images, aur APIs ko request aur deliver karne ke rules define karta hai.
+    * **TCP:** Connection management, packet ordering, retransmissions, aur flow control ke zariye reliable delivery deta hai.
+    * **IP:** Device addressing aur multiple interconnected networks ke beech packets ki routing sambhalta hai.
+
+* **Stack of Responsibilities (How Layers Divide the Work):**
+  * Ek single giant protocol banane ke bajaye kaam ko alag levels par split kiya gaya hai:
+    * **Application & Presentation:** User data generate karta hai (jaise HTTP request) aur zaroorat padne par formatting, compression, ya encryption karta hai.
+    * **Reliability & Transport:** Ensure karta hai ki data bina loss ke aur sahi order mein pahunche (error recovery).
+    * **Routing & Network:** Packets ko alag-alag networks ke through best path par route karta hai.
+    * **Physical Transmission:** Underlying hardware bits (0s aur 1s) ko electrical, optical, ya wireless signals mein bhejta hai.
+  * Har layer sirf apne **upar aur neeche wali adjacent layer** se ek well-defined interface ke through interact karti hai; use doosri layers ki internal implementation jaanne ki zaroorat nahi hoti.
+
+* **5 Key Reasons Why Layers Are Powerful:**
+  1. **Modularity:** Har layer ek specific function perform karti hai, jisse complex network ko design, manage, aur maintain karna aasaan ho jaata hai.
+  2. **Interoperability:** Alag-alag companies/vendors (Apple, Dell, Cisco, Android) ke hardware aur OS aapas mein communicate kar sakte hain kyunki sab common protocol standards follow karte hain.
+  3. **Easier Upgrades:** Ek layer mein modification ya upgrade (jaise Wi-Fi technology ya encryption update karna) poore networking stack ko affect kiye bina kiya ja sakta hai.
+  4. **Easier Debugging:** Agar network mein koi fault aaye, toh problem ko ek specific layer par isolate karke troubleshoot karna bahut aasaan hota hai.
+  5. **Standardization:** Well-defined global rules ensure karte hain ki poora Internet consistent, compatible, aur scalable rahe.
+
+---
+
+### 3. Diagram (Layered Communication Stack: Sender to Receiver)
+```text
+   SENDER (Laptop)                                    RECEIVER (Web Server)
++-------------------+                              +-------------------+
+| Application Layer | <--- (HTTP Rules / Data) --> | Application Layer |
++-------------------+                              +-------------------+
+         |                                                   ^
+         v                                                   |
++-------------------+                              +-------------------+
+|  Transport Layer  | <--- (TCP Reliability) ----> |  Transport Layer  |
++-------------------+                              +-------------------+
+         |                                                   ^
+         v                                                   |
++-------------------+                              +-------------------+
+|   Network Layer   | <--- (IP Routing) ---------> |   Network Layer   |
++-------------------+                              +-------------------+
+         |                                                   ^
+         v                                                   |
++-------------------+                              +-------------------+
+|  Physical Layer   | === [Cables / Wi-Fi Bits] ==> |  Physical Layer   |
++-------------------+                              +-------------------+
+```
+
+
+## 7. OSI Model Layers and Protocols (Reference: takeUforward CN Series)
+
+### 1. Concept with Real-World Example (Daily Life Routine)
+Socho aapko Jammu se apne kisi dost ko Mumbai ek **Confidential Legal Document** courier karna hai. Is poore kaam ko 7 alag-alag stages (layers) mein baanta gaya hai taaki document bina kisi galti ya leak ke safe pahunche:
+
+* **Layer 7 - Application Layer (Aap Khud):** Aap letter likhte ho aur decide karte ho ki ise Speed Post se bhejna hai.
+* **Layer 6 - Presentation Layer (Translator & Locker):** Aap letter ko English/UTF-8 mein format karte ho, compress karke chhote envelope mein dalte ho, aur ek secret code se **encrypt (lock)** karte ho taaki raste mein koi padh na sake.
+* **Layer 5 - Session Layer (Call/Appointment Manager):** Aap Mumbai wale dost ko phone karke bolte ho, *"Main document bhej raha hoon, line par rehna aur receive hone par confirm karna"* — yeh ek ongoing conversation (**Session**) start aur manage karta hai.
+* **Layer 4 - Transport Layer (Packaging & Tracking Department):** Agar document 100 pages ka hai, toh use 10 chhote numbered packets (**Segments**) mein baanta jaata hai (`1/10`, `2/10`...) aur uspe likha jaata hai ki dost ke ghar ke kaunse specific room/person (**Port Number**) ko dena hai.
+* **Layer 3 - Network Layer (GPS & Highway Routing):** Envelope par **From: Jammu (Source IP)** aur **To: Mumbai (Destination IP)** likha jaata hai, aur GPS decide karta hai ki kaunse shehron aur highways se hote hue parcel jayega (**Routing**).
+* **Layer 2 - Data Link Layer (Local Delivery Boy & Gate Pass):** Har shehar ke andar ek hub se agle hub tak jaane ke liye gaadi ka number plate (**MAC Address**) check hota hai aur box ko seal (**Frame**) kiya jaata hai ki koi damage na ho.
+* **Layer 1 - Physical Layer (Asli Road, Train, ya Flight):** Jis road ya flight se woh box physically travel karta hai — bilkul waise hi cables aur Wi-Fi signals **0s aur 1s (Bits)** ko le jaate hain.
+
+Mumbai pahunch kar aapka dost bilkul ulte order (Layer 1 se Layer 7) mein box kholta hai, decrypt karta hai, aur asli letter padh leta hai!
+
+---
+
+### 2. Technical Explanation (Relating to the Example)
+takeUforward ke Computer Networks curriculum ke according, **OSI (Open Systems Interconnection) Model** ek 7-layer conceptual framework hai jo bottom (Layer 1) se top (Layer 7) tak data flow ko define karta hai:
+
+* **7 Layers, Responsibilities, Protocols & Data Units (PDUs):**
+  1. **Layer 1 – Physical Layer (`PDU: Bits`):**
+     * **Kaam:** Raw bits (`0`s aur `1`s) ko physical medium par electrical pulses, light signals, ya radio waves ke roop mein transmit karna. Ise IP ya MAC address ki koi samajh nahi hoti.
+     * **Tech/Examples:** Ethernet cables, Optical Fiber, Wi-Fi radio waves, Hubs, Connectors.
+  2. **Layer 2 – Data Link Layer (`PDU: Frame`):**
+     * **Kaam:** Same local network (LAN) ke andar node-to-node delivery, **MAC Addressing**, Framing, aur Error Detection (FCS).
+     * **Tech/Examples:** Ethernet, Wi-Fi (802.11), Switches, VLANs, MAC Address.
+  3. **Layer 3 – Network Layer (`PDU: Packet`):**
+     * **Kaam:** Alag-alag networks ke beech logical addressing (**IPv4/IPv6**) aur best path find karna (**Routing**).
+     * **Tech/Examples:** IP, ICMP, Routers.
+  4. **Layer 4 – Transport Layer (`PDU: Segment [TCP] / Datagram [UDP]`):**
+     * **Kaam:** Process-to-process delivery using **Port Numbers**, Segmentation, Flow Control, aur Error Recovery.
+     * **Protocols:** **TCP** (Reliable, connection-oriented, ACK + retransmission) aur **UDP** (Fast, connectionless, no retransmission guarantee).
+  5. **Layer 5 – Session Layer (`PDU: Data`):**
+     * **Kaam:** Do systems ke beech ongoing conversation (session) ko establish, maintain, synchronize, aur cleanly terminate karna.
+  6. **Layer 6 – Presentation Layer (`PDU: Data`):**
+     * **Kaam:** Data translation/encoding, **Encryption/Decryption** (SSL/TLS concepts), aur **Compression**.
+     * **Examples:** UTF-8, ASCII, JPEG, PNG, Encryption formats.
+  7. **Layer 7 – Application Layer (`PDU: Data`):**
+     * **Kaam:** User applications ko network services aur protocols provide karna (khud app nahi, balki app ke peeche chalne wale protocols).
+     * **Protocols:** **HTTP/HTTPS** (Web), **DNS** (Domain lookup), **FTP** (File transfer), **SMTP/IMAP/POP3** (Email), **DHCP** (Auto IP).
+
+* **OSI Model vs. Practical TCP/IP Model:**
+  * OSI ek theoretical reference model hai (7 layers), jabki real Internet **TCP/IP Model** (4 layers) par chalta hai:
+    * OSI ke `Application + Presentation + Session` = TCP/IP ka **Application Layer**.
+    * OSI ka `Transport` = TCP/IP ka **Transport Layer**.
+    * OSI ka `Network` = TCP/IP ka **Internet Layer**.
+    * OSI ke `Data Link + Physical` = TCP/IP ka **Network Access Layer**.
+
+---
+
+### 3. Diagram (OSI 7 Layers, PDUs & Encapsulation/Decapsulation Flow)
+```text
+   SENDER (Encapsulation: Top -> Down)               RECEIVER (Decapsulation: Bottom -> Up)
++---------------------------------------+          +---------------------------------------+
+| 7. Application  [HTTP, DNS, SMTP]     | --Data-> | 7. Application  [Original Data]       |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| 6. Presentation [Encryption, UTF-8]   | --Data-> | 6. Presentation [Decrypt/Decompress]  |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| 5. Session      [Session Mgmt/Sync]   | --Data-> | 5. Session      [Session Check]       |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| 4. Transport    [TCP/UDP + Port No.]  | -Segment>| 4. Transport    [Reassemble + Port]   |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| 3. Network      [IP Address + Router] | -Packet->| 3. Network      [Read/Strip IP]       |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| 2. Data Link    [MAC Addr + Switch]   | -Frame-->| 2. Data Link    [Read/Strip MAC]      |
++---------------------------------------+          +---------------------------------------+
+                    |                                                  ^
+                    v                                                  |
++---------------------------------------+          +---------------------------------------+
+| 1. Physical     [Cables / Wi-Fi]      | ==Bits==> | 1. Physical     [Receive Bits]        |
++---------------------------------------+          +---------------------------------------+
+```
+### 4. Step-by-Step Working (Kaise Kaam Karta Hai)
+-- Data Creation & Formatting (Layers 7, 6, 5): Browser ek HTTP request (Data) banata hai; Presentation layer use format/encrypt karti hai, aur Session layer communication session establish karti hai.
+-- Encapsulation on Sender Side (Layers 4 -> 1):
+    - Transport Layer (L4) data ko tod kar TCP/UDP header (Port Numbers) lagati hai $\rightarrow$ Segment banta hai.
+    - Network Layer (L3) Source aur Destination IP header lagati hai $\rightarrow$ Packet banta hai.
+    - Data Link Layer (L2) Source aur Destination MAC address aur error-check trailer lagati hai $\rightarrow$ Frame banta hai.
+    - Physical Layer (L1) poore frame ko raw Bits (0s aur 1s) mein badal kar wire ya Wi-Fi waves par bhej deti hai (Data => Segment => Packet => Frame => Bits).
+-- Network Traversal: Local Switch Layer 2 par MAC address dekh kar frame forward karta hai, aur Router Layer 3 par IP address dekh kar packet ko destination network tak route karta hai.
+-- Decapsulation on Receiver Side (Layers 1 -> 7): Receiver bits capture karta hai aur neeche se upar jaate hue har layer apna header check karke remove (strip) karti hai (Bits => Frame => Packet => Segment => Data), aur finally clean message destination application ko mil jaata hai.
