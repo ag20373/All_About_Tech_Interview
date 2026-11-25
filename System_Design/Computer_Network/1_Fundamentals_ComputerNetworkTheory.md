@@ -620,7 +620,6 @@ takeUforward ke Computer Networks curriculum ke according, **TCP/IP Model** real
 ```
 
 ## 10. Encapsulation and Decapsulation
-
 ### 1. Concept with Real-World Example (Daily Life Routine)
 Socho aapko ek important gift (ek wristwatch) apne dost ko courier karna hai. Aap directly khuli watch courier boy ke haath mein nahi pakda dete, balki use step-by-step pack karte ho:
 
@@ -714,5 +713,3 @@ Computer networks mein jab data ek device se doosre device par jaata hai, toh ne
 |               (Bits)                  |  Wire /  |               (Bits)                  |
 +---------------------------------------+  Wi-Fi   +---------------------------------------+  
 ```
-
-# 
